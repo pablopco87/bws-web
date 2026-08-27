@@ -45,7 +45,7 @@ function TandaRow({ tanda, dense = false }: { tanda: (typeof tandas)[number]; de
   return (
     <div
       className={cn(
-        "flex items-center gap-3 border-b border-[#1a1a20] px-3.5",
+        "flex items-center gap-3 border-b border-border-divider px-3.5",
         dense ? "py-2.5" : "py-[11px]"
       )}
     >
@@ -95,7 +95,7 @@ function DesktopPanel() {
     <Collapsible
       open={open}
       onOpenChange={setOpen}
-      className="fixed right-8 bottom-8 z-30 hidden w-[372px] border border-[#2c2c33] bg-surface-panel shadow-panel backdrop-blur-[10px] lg:block"
+      className="fixed right-8 bottom-8 z-30 hidden w-[372px] border border-border-panel bg-surface-panel shadow-panel backdrop-blur-[10px] lg:block"
     >
       <div className="flex items-center justify-between border-b border-border-hairline px-3.5 py-3">
         <div className="flex items-center gap-[9px] font-mono text-[11px] tracking-[0.14em] text-muted">
@@ -131,7 +131,7 @@ function MobilePill() {
       <SheetTrigger asChild>
         <button
           type="button"
-          className="fixed right-3.5 bottom-4 z-30 flex items-center gap-[9px] border border-[#2c2c33] bg-surface-panel px-3.5 py-[11px] shadow-panel backdrop-blur-[10px] lg:hidden"
+          className="fixed right-3.5 bottom-4 z-30 flex items-center gap-[9px] border border-border-panel bg-surface-panel px-3.5 py-[11px] shadow-panel backdrop-blur-[10px] lg:hidden"
         >
           <LiveDot />
           <span className="font-mono text-[11px] tracking-[0.1em] text-foreground">
@@ -141,7 +141,7 @@ function MobilePill() {
           <ChevronDown className="size-3.5 rotate-180 text-muted-2" />
         </button>
       </SheetTrigger>
-      <SheetContent side="bottom" showClose={false} className="border-t border-[#2c2c33] p-0">
+      <SheetContent side="bottom" showClose={false} className="border-t border-border-panel p-0">
         <SheetTitle className="sr-only">Fabricación en vivo</SheetTitle>
         <div className="flex items-center justify-between border-b border-border-hairline px-4 py-3">
           <div className="flex items-center gap-[9px] font-mono text-[11px] tracking-[0.14em] text-muted">
@@ -164,7 +164,7 @@ function MobilePill() {
 /** <1024px, pack-detail pages only: fixed bottom bar, no pill/sheet — detail's on the page. */
 function MobileBar() {
   return (
-    <div className="fixed inset-x-0 bottom-0 z-30 flex items-center gap-3 border-t border-[#2c2c33] bg-surface-panel px-4 py-3 shadow-panel backdrop-blur-[10px] lg:hidden">
+    <div className="fixed inset-x-0 bottom-0 z-30 flex items-center gap-3 border-t border-border-panel bg-surface-panel px-4 py-3 shadow-panel backdrop-blur-[10px] lg:hidden">
       <div className="flex-1">
         <div className="flex items-center gap-2 font-mono text-[10px] tracking-[0.12em] text-muted">
           <LiveDot />

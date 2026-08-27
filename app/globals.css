@@ -35,6 +35,7 @@
   --border: #33333a; /* buttons, toggle, chips */
   --border-hairline: #22222a; /* panel/card borders, section rules */
   --border-divider: #1c1c22; /* header/footer hairlines */
+  --border-panel: #2c2c33; /* floating slots panel + dropdown/mega-menu (.bwsdrop-panel) */
 
   /* slot status */
   --slot-full: var(--accent);
@@ -73,6 +74,7 @@
   --border: #cfccc2;
   --border-hairline: #e0ded6;
   --border-divider: #e4e2da;
+  --border-panel: #dedcd4;
 
   --slot-full: var(--accent);
   --slot-full-border: rgb(23 163 84 / 40%);
@@ -108,6 +110,7 @@
   --color-border: var(--border);
   --color-border-hairline: var(--border-hairline);
   --color-border-divider: var(--border-divider);
+  --color-border-panel: var(--border-panel);
 
   --color-slot-full: var(--slot-full);
   --color-slot-full-border: var(--slot-full-border);
