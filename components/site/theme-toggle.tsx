@@ -37,7 +37,7 @@ export function ThemeToggle({ className }: { className?: string }) {
       />
       <SunIcon
         className={cn(
-          "relative z-10 ml-[15px] size-[13px] shrink-0 transition-[color,opacity] duration-300",
+          "relative z-10 ml-[17px] size-[13px] shrink-0 transition-[color,opacity] duration-300",
           isLight ? "text-background opacity-100" : "text-muted-2 opacity-80"
         )}
       />
