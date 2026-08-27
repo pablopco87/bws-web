@@ -1,0 +1,229 @@
+trabajadas / planificadas: 105.47 / 105h
+Header
+Label
+entrada
+entrada
+salida
+Empleado
+Label
+Label
+id
+horas
+posición
+real
+plan
+real
+plan
+horas trabajadas
+horas planificadas
+diferencia
+tipo de ausencia
+confirmación
+Label
+Label
+Diego Herrera Navarro
+927563
+30h
+Sales Assistant
+08:02
+08:00
+13:32
+13:30
+7h 35min
+7h 30min
++5min
+-
+confirmado
+Label
+Label
+13:58
+14:00
+21:35
+21:30
+Label
+Label
+Sofía Ramírez Castillo
+483920
+35.5h
+Sales Assistant
+07:58
+08:00
+13:29
+13:30
+7h 33min
+7h 30min
++3min
+-
+confirmado
+Label
+Label
+14:02
+14:00
+21:33
+21:30
+Label
+Label
+Miguel Sánchez López
+175634
+20h
+Sales Assistant
+08:02
+08:00
+13:32
+13:30
+7h 35min
+7h 30min
++5min
+-
+confirmado
+Label
+Label
+14:02
+14:00
+21:35
+21:30
+Label
+Label
+Lucía Fernández Ruiz
+902176
+35.5h
+Sales Assistant
+07:58
+08:00
+13:29
+13:30
+7h 31min
+7h 30min
++1min
+-
+confirmado
+Label
+Label
+13:58
+14:00
+21:33
+21:30
+Fecha
+Label
+Label
+Javier Torres Morales
+492867
+Label
+Label
+07:58
+08:00
+13:32
+13:30
+638291
+30h
+Sales Assistant
+7h 35min
+7h 30min
++5min
+-
+confirmado
+Estado
+Label
+Label
+537291
+Label
+Label
+14:02
+14:00
+21:33
+21:30
+Departamento
+Label
+Label
+Ana Gómez Díaz
+814672
+Label
+Label
+08:02
+08:00
+13:32
+13:30
+754803
+35.5h
+Sales Assistant
+7h 32min
+7h 30min
++2min
+-
+confirmado
+Fecha
+Label
+Label
+681045
+Label
+Label
+13:58
+14:00
+21:35
+21:30
+Proyecto
+Label
+Label
+Carlos Martínez Gómez
+349210
+Label
+Label
+08:02
+08:00
+13:29
+13:30
+219487
+30h
+Sales Assistant
+7h 35min
+7h 30min
++5min
+-
+confirmado
+Supervisor
+Label
+Label
+256903
+Label
+Label
+14:02
+14:00
+21:35
+21:30
+Ubicación
+Label
+Label
+María Pérez Ortega
+730184
+Label
+Label
+08:02
+08:00
+13:32
+13:30
+864320
+20h
+Sales Assistant
+7h 34min
+7h 30min
++4min
+-
+confirmado
+10 items per page
+Label
+Label
+Label
+Label
+Label
+Label
+Label
+1
+2
+Label
+3
+4
+5
+...
+1 to 10 of 1000
+...
+6

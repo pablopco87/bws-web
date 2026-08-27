@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<template id="__bundler_thumbnail" data-bg-color="#0a0a0b">
+  <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#0a0a0b"></rect><g fill="none" stroke="#4ADE80" stroke-width="2.4"><rect x="22" y="30" width="34" height="24"></rect><rect x="64" y="30" width="34" height="24"></rect><rect x="22" y="64" width="20" height="26"></rect><rect x="50" y="64" width="20" height="26"></rect><rect x="78" y="64" width="20" height="26"></rect></g></svg>
+</template>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: #e7e5e1; }
+  a { color: inherit; text-decoration: none; }
+  a:hover { text-decoration: none; }
+  @keyframes blink { 0%, 62% { opacity: 1; } 63%, 100% { opacity: .22; } }
+  .bwsnav { transition: color .18s; }
+  .bwsnav:hover { color: #4ADE80; }
+  .bwspack { transition: border-color .25s, background .25s, transform .35s cubic-bezier(.16,1,.3,1); }
+  .bwspack:hover { border-color: #4ADE80; background: #101014; transform: translateY(-4px); }
+  .bwspack:hover .bwspack-cta { color: #4ADE80; }
+  .bwspack:hover .bwspack-arrow { transform: translateX(4px); }
+  .bwspack-cta { color: #7d7d86; transition: color .2s; }
+  .bwspack-arrow { display: inline-block; transition: transform .25s cubic-bezier(.16,1,.3,1); }
+  .bwsbtn-p, .bwsbtn-s { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; gap: 10px; height: 52px; line-height: 1; padding: 0 26px; font-size: 15px; font-weight: 500; border: 1px solid transparent; transition: background .22s cubic-bezier(.16,1,.3,1), color .22s, border-color .22s, box-shadow .22s, transform .22s; }
+  .bwsbtn-p { border-color: #4ADE80; color: #4ADE80; }
+  .bwsbtn-p:hover { background: #6bf39b; border-color: #6bf39b; color: #06120c; box-shadow: 0 10px 28px rgba(74,222,128,.18); transform: translateY(-2px); }
+  .bwslink { display: inline-flex; align-items: center; gap: 7px; color: #4ADE80; border-bottom: 1px solid rgba(74,222,128,.32); padding-bottom: 2px; transition: color .2s, border-color .2s; }
+  .bwslink:hover { color: #9dfcc2; border-color: #9dfcc2; }
+  .bwslink .bwsarrow { font-family: 'IBM Plex Mono', monospace; transition: transform .25s cubic-bezier(.16,1,.3,1); }
+  .bwslink:hover .bwsarrow { transform: translateX(4px); }
+  .bwsruta { transition: border-color .25s, background .25s; }
+  .bwsruta:hover { border-color: #4ADE80; background: #101014; }
+  .bwsruta:hover .bwsruta-cta { color: #4ADE80; }
+  .bwsruta-cta { color: #a1a1aa; transition: color .2s; }
+  .bwstrigger { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; background: transparent; border: 0; padding: 0; font-family: 'Archivo', system-ui, sans-serif; font-size: 14px; color: inherit; transition: color .18s; }
+  .bwstrigger:hover { color: #4ADE80; }
+  .bwsslot-full { color: #4ADE80; border: 1px solid rgba(74,222,128,.34); }
+  .bwsslot-half { color: #7d7d86; border: 1px solid #33333a; }
+  .bwstoggle { position: relative; display: inline-flex; align-items: center; width: 58px; height: 28px; border: 1px solid #33333a; border-radius: 999px; cursor: pointer; background: transparent; padding: 0; transition: border-color .25s; }
+  .bwstoggle:hover { border-color: #4ADE80; }
+  .bwstoggle-knob { position: absolute; top: 2px; left: 2px; width: 22px; height: 22px; border-radius: 50%; background: #4ADE80; transition: transform .38s cubic-bezier(.16,1,.3,1); }
+  .bwstoggle svg { position: relative; z-index: 1; width: 13px; height: 13px; flex: none; transition: color .3s, opacity .3s; }
+  .bwstoggle .bwsicon-moon { margin-left: 6.5px; color: #06120c; }
+  .bwstoggle .bwsicon-sun { margin-left: 15px; color: #7d7d86; opacity: .8; }
+  .bwsnotrans, .bwsnotrans * { transition: none !important; }
+  .bwsph { border-bottom: 1px dashed #3a3a42; }
+
+  /* ---------- LIGHT MODE ---------- */
+  #bws-root { transition: background .4s ease, color .4s ease, border-color .4s ease; }
+  #bws-root[data-theme="light"] { background: #FAFAF9 !important; color: #17181A !important; border-color: #DEDCD4 !important; }
+  #bws-root[data-theme="light"] [stroke="#4ADE80"] { stroke: #17A354 !important; }
+  #bws-root[data-theme="light"] [fill="#4ADE80"] { fill: #17A354 !important; }
+  #bws-root[data-theme="light"] .bwslogo { filter: invert(1) brightness(.18); }
+  #bws-root[data-theme="light"] .bwsnav:hover, #bws-root[data-theme="light"] .bwslink { color: #17A354 !important; }
+  #bws-root[data-theme="light"] .bwslink { border-color: rgba(23,163,84,.32) !important; }
+  #bws-root[data-theme="light"] .bwstrigger:hover { color: #17A354 !important; }
+  #bws-root[data-theme="light"] .bwsbtn-p:not(.bwsbtn-solid) { border-color: #17A354 !important; color: #17A354 !important; }
+  #bws-root[data-theme="light"] .bwsbtn-solid { background: #17A354 !important; border-color: #17A354 !important; color: #FAFAF9 !important; }
+  #bws-root[data-theme="light"] .bwsbtn-solid:hover { background: #0F7C3E !important; border-color: #0F7C3E !important; }
+  #bws-root[data-theme="light"] .bwsalt { background: #F1F0EC !important; }
+  #bws-root[data-theme="light"] .bwsalt .bwspack, #bws-root[data-theme="light"] .bwsalt .bwsruta { background: #FAFAF9 !important; }
+  #bws-root[data-theme="light"] .bwspack, #bws-root[data-theme="light"] .bwsruta { border-color: #E0DED6 !important; }
+  #bws-root[data-theme="light"] .bwspack:hover, #bws-root[data-theme="light"] .bwsruta:hover { border-color: #17A354 !important; background: #F4F3F0 !important; }
+  #bws-root[data-theme="light"] .bwspack-cta, #bws-root[data-theme="light"] .bwsruta-cta { color: #6E6F66 !important; }
+  #bws-root[data-theme="light"] .bwspack:hover .bwspack-cta, #bws-root[data-theme="light"] .bwsruta:hover .bwsruta-cta { color: #17A354 !important; }
+  #bws-root[data-theme="light"] .bwsmuted { color: #6E6F66 !important; }
+  #bws-root[data-theme="light"] .bwsfaint { color: #9B9C91 !important; }
+  #bws-root[data-theme="light"] .bwsrule { border-color: #E0DED6 !important; }
+  #bws-root[data-theme="light"] .bwsslot-full { color: #17A354 !important; border-color: rgba(23,163,84,.4) !important; }
+  #bws-root[data-theme="light"] .bwsslot-half { color: #6E6F66 !important; border-color: #CFCCC2 !important; }
+  #bws-root[data-theme="light"] .bwstoggle { border-color: #CFCCC2; }
+  #bws-root[data-theme="light"] .bwstoggle-knob { transform: translateX(30px); background: #17A354; }
+  #bws-root[data-theme="light"] .bwstoggle .bwsicon-moon { color: #9B9C91; opacity: .8; }
+  #bws-root[data-theme="light"] .bwstoggle .bwsicon-sun { color: #FAFAF9; opacity: 1; }
+  #bws-root[data-theme="light"] [style*="repeating-linear-gradient(135deg, rgb(11, 11, 14)"] { background: repeating-linear-gradient(135deg, #F2F1EC 0 8px, #E9E7E1 8px 16px) !important; }
+  #bws-root[data-theme="light"] .bwsph { border-color: #D3D0C6 !important; }
+  #bws-root[data-theme="light"] .bwsdark { background: #F1F0EC !important; color: #17181A !important; }
+  #bws-root[data-theme="light"] .bwsdark img { filter: invert(1) brightness(.2); }
+  #bws-root[data-theme="light"] [style*="rgba(14, 14, 17, 0.94)"] { background: rgba(250, 250, 249, .96) !important; box-shadow: 0 24px 60px rgba(23,24,26,.13) !important; }
+  #bws-root[data-theme="light"] [style*="rgb(34, 34, 42)"], #bws-root[data-theme="light"] [style*="rgb(23, 23, 26)"], #bws-root[data-theme="light"] [style*="rgb(26, 26, 32)"], #bws-root[data-theme="light"] [style*="rgb(44, 44, 51)"], #bws-root[data-theme="light"] [style*="rgb(38, 38, 42)"] { border-color: #E4E2DA !important; }
+  #bws-root[data-theme="light"] [style*="rgb(74, 74, 85)"] { border-color: #C6C3B9 !important; }
+  #bws-root[data-theme="light"] [style*="color: rgb(237, 237, 240)"] { color: #17181A !important; }
+  #bws-root[data-theme="light"] [style*="color: rgb(161, 161, 170)"] { color: #64655D !important; }
+  #bws-root[data-theme="light"] [style*="color: rgb(125, 125, 134)"] { color: #82837A !important; }
+  #bws-root[data-theme="light"] [style*="color: rgb(85, 85, 95)"] { color: #9B9C91 !important; }
+  #bws-root[data-theme="light"] [style*="color: rgb(74, 222, 128)"] { color: #17A354 !important; }
+  #bws-root[data-theme="light"] [style*="background: rgb(74, 222, 128)"] { background: #17A354 !important; color: #FAFAF9 !important; }
+  #bws-root[data-theme="light"] [style*="rgb(28, 28, 34)"] { border-color: #E4E2DA !important; }
+
+
+  #bws-root[data-theme="light"] [style*="width: 1px"][style*="background: rgb(38, 38, 42)"] { background: #E4E2DA !important; }
+</style>
+</helmet>
+
+<section style="padding: 72px 80px 40px; font-family: 'Archivo', system-ui, sans-serif;">
+  <div style="display: flex; align-items: baseline; gap: 20px; margin-bottom: 12px;">
+    <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: #7c766c;">Turno 10 · /producto</span>
+    <h1 style="margin: 0; font-size: 28px; font-weight: 600; color: #1b1a18;">Catálogo de packs</h1>
+  </div>
+  <p style="margin: 0 0 40px; max-width: 980px; font-size: 15px; line-height: 1.6; color: #4c4842;">Estructura completa de la página: cabecera, migas, catálogo en dos bloques, tres rutas de decisión detrás de las tarjetas, línea a STL al pie del catálogo y módulo flotante de slots en su posición habitual.</p>
+
+  <div style="display: flex; flex-wrap: wrap; gap: 40px; align-items: flex-start;">
+
+    <!-- ================= 10a · AGRUPADA ================= -->
+    <div id="10a" style="display: flex; flex-direction: column; gap: 18px;">
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: .1em; background: #1b1a18; color: #f4f2ee; padding: 5px 9px;">10a</span>
+        <span style="font-size: 15px; font-weight: 600; color: #1b1a18;">Dos bloques · mesa vs piezas</span>
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7c766c;">2 tarjetas grandes + 3 iguales</span>
+      </div>
+
+      <div id="bws-root" class="bwsroot" data-theme="dark" style="position: relative; width: 1440px; background: #0a0a0b; color: #ededf0; overflow: hidden; border: 1px solid #26262a;">
+
+        <div style="position: relative; z-index: 20; display: flex; align-items: center; justify-content: space-between; padding: 0 56px; height: 84px; border-bottom: 1px solid rgba(255,255,255,.07);">
+          <a href="#10a" aria-label="Brutal Work Studio · inicio"><img class="bwslogo" src="logos/bws-wordmark-light.svg" alt="Brutal Work Studio" style="height: 30px; width: auto; display: block;"></a>
+          <div style="display: flex; align-items: center; gap: 34px; font-size: 14px; color: #a1a1aa;">
+            <button type="button" class="bwstrigger" aria-expanded="false" style="color: #ededf0;">Packs
+              <svg class="bwscaret" width="9" height="6" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M1 1l4 4 4-4"></path></svg>
+            </button>
+            <a href="#10a" class="bwsnav">STL</a>
+            <a href="#10a" class="bwsnav">Slider System</a>
+            <a href="#10a" class="bwsnav">Sobre nosotros</a>
+            <a href="#10a" class="bwsnav">FAQ</a>
+            <div class="bwsrule" style="width: 1px; height: 20px; background: #26262a;"></div>
+            <a href="#10a" class="bwsnav" style="display: flex; align-items: center; gap: 8px;">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2.2l2.2 11.2a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 2-1.55L21 8H6.2"></path><circle cx="10" cy="20" r="1.3"></circle><circle cx="17.5" cy="20" r="1.3"></circle></svg>
+              <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #4ADE80;">0</span>
+            </a>
+            <button type="button" class="bwstoggle" aria-label="Cambiar tema" onClick="{{ toggleTheme }}">
+              <span class="bwstoggle-knob"></span>
+              <svg class="bwsicon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg>
+              <svg class="bwsicon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"></path></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="bwsrule" style="display: flex; align-items: center; gap: 10px; padding: 18px 56px; border-bottom: 1px solid #17171a; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .12em; color: #55555f;">
+          <a href="#10a" class="bwsnav">INICIO</a><span>/</span><span style="color: #4ADE80;">PACKS</span>
+        </div>
+
+        <!-- cabecera de página -->
+        <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 34px; padding: 64px 56px 48px; border-bottom: 1px solid #17171a;">
+          <div style="max-width: 720px;">
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; letter-spacing: .16em; color: #4ADE80;">CATÁLOGO · 5 PACKS FÍSICOS</div>
+            <h2 style="margin: 18px 0 0; font-size: 62px; line-height: 1.03; font-weight: 600; letter-spacing: -.035em;">Packs</h2>
+            <p class="bwsmuted" style="margin: 22px 0 0; font-size: 16px; line-height: 1.6; color: #a1a1aa; text-wrap: pretty;">Escenografía impresa en 3D con Slider System™. Dos packs cubren mesa; tres resuelven piezas concretas. Cada pack ocupa slot de fabricación en una única impresora, así que la disponibilidad va por tandas.</p>
+          </div>
+        </div>
+
+        <!-- BLOQUE 1 · PACKS DE MESA -->
+        <div style="padding: 56px 56px 8px;">
+          <div style="display: flex; align-items: baseline; gap: 18px; margin-bottom: 8px;">
+            <h3 style="margin: 0; font-size: 13px; font-family: 'IBM Plex Mono', monospace; font-weight: 500; letter-spacing: .16em; color: #4ADE80;">01 · PACKS DE MESA</h3>
+            </div>
+          <p class="bwsmuted" style="margin: 0 0 28px; max-width: 720px; font-size: 14.5px; line-height: 1.6; color: #a1a1aa;">Empieza aquí si no tienes escenografía todavía: el pack te deja la mesa jugable sin añadir nada más.</p>
+
+          <div style="display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 24px;">
+            <a href="#10a" class="bwspack" style="border: 1px solid #22222a; display: flex; flex-direction: column;">
+              <div class="bwsph" style="position: relative; aspect-ratio: 16/9; background: repeating-linear-gradient(135deg, #0b0b0e 0 8px, #101015 8px 16px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;">
+                <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: .16em; color: #4ADE80;">RENDER PENDIENTE</div>
+                <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .1em; color: #55555f;">MESA COMPLETA MONTADA</div>
+              </div>
+              <div style="padding: 26px 26px 24px;">
+                <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 18px;">
+                  <div>
+                    <div style="font-size: 30px; font-weight: 600; letter-spacing: -.02em;">Tournament</div>
+                    <div style="margin-top: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .14em; color: #7d7d86;">MESA COMPLETA</div>
+                  </div>
+                  <span class="bwsslot-full" style="flex: none; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .1em; padding: 5px 9px;">1 SLOT</span>
+                </div>
+                <p class="bwsmuted" style="margin: 18px 0 0; font-size: 14.5px; line-height: 1.6; color: #a1a1aa;">Cobertura de mesa completa para partida de torneo. Desglose de piezas pendiente de cierre.</p>
+                <div class="bwsrule" style="display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; margin-top: 22px; padding-top: 18px; border-top: 1px solid #1e1e24;">
+                  <div>
+                    <div class="bwsfaint" style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .13em; color: #55555f;">PIEZAS</div>
+                    <div style="margin-top: 6px; font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: #ededf0;">—</div>
+                  </div>
+                  <div>
+                    <div class="bwsfaint" style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .13em; color: #55555f;">PRECIO</div>
+                    <div style="margin-top: 6px; font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: #ededf0;">—</div>
+                  </div>
+                  <div>
+                    <div class="bwsfaint" style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .13em; color: #55555f;">FABRICACIÓN</div>
+                    <div style="margin-top: 6px; font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: #ededf0;">—</div>
+                  </div>
+                </div>
+                <div class="bwspack-cta" style="margin-top: 22px; display: flex; align-items: center; justify-content: space-between; font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; letter-spacing: .12em;">VER FICHA<span class="bwspack-arrow">→</span></div>
+              </div>
+            </a>
+
+            <a href="#10a" class="bwspack" style="border: 1px solid #22222a; display: flex; flex-direction: column;">
+              <div class="bwsph" style="position: relative; aspect-ratio: 16/9; background: repeating-linear-gradient(135deg, #0b0b0e 0 8px, #101015 8px 16px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;">
+                <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: .16em; color: #4ADE80;">RENDER PENDIENTE</div>
+                <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .1em; color: #55555f;">MEDIA MESA MONTADA</div>
+              </div>
+              <div style="padding: 26px 26px 24px;">
+                <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 18px;">
+                  <div>
+                    <div style="font-size: 30px; font-weight: 600; letter-spacing: -.02em;">Battle Ready</div>
+                    <div style="margin-top: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .14em; color: #7d7d86;">MEDIA MESA</div>
+                  </div>
+                  <span class="bwsslot-half" style="flex: none; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .1em; padding: 5px 9px;">1/2 SLOT</span>
+                </div>
+                <p class="bwsmuted" style="margin: 18px 0 0; font-size: 14.5px; line-height: 1.6; color: #a1a1aa;">Cobertura de media mesa, para completar entre dos jugadores o empezar por la mitad. Desglose de piezas pendiente de cierre.</p>
+                <div class="bwsrule" style="display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; margin-top: 22px; padding-top: 18px; border-top: 1px solid #1e1e24;">
+                  <div>
+                    <div class="bwsfaint" style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .13em; color: #55555f;">PIEZAS</div>
+                    <div style="margin-top: 6px; font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: #ededf0;">—</div>
+                  </div>
+                  <div>
+                    <div class="bwsfaint" style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .13em; color: #55555f;">PRECIO</div>
+                    <div style="margin-top: 6px; font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: #ededf0;">—</div>
+                  </div>
+                  <div>
+                    <div class="bwsfaint" style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .13em; color: #55555f;">FABRICACIÓN</div>
+                    <div style="margin-top: 6px; font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: #ededf0;">—</div>
+                  </div>
+                </div>
+                <div class="bwspack-cta" style="margin-top: 22px; display: flex; align-items: center; justify-content: space-between; font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; letter-spacing: .12em;">VER FICHA<span class="bwspack-arrow">→</span></div>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- BLOQUE 2 · PACKS DE PIEZAS -->
+        <div style="padding: 56px 56px 64px;">
+          <div style="display: flex; align-items: baseline; gap: 18px; margin-bottom: 8px;">
+            <h3 style="margin: 0; font-size: 13px; font-family: 'IBM Plex Mono', monospace; font-weight: 500; letter-spacing: .16em; color: #4ADE80;">02 · PACKS DE PIEZAS ESPECÍFICAS</h3>
+            </div>
+          <p class="bwsmuted" style="margin: 0 0 28px; max-width: 720px; font-size: 14.5px; line-height: 1.6; color: #a1a1aa;">Para quien ya tiene mesa y necesita una familia de pieza concreta. Se acoplan al mismo dovetail que los packs de mesa.</p>
+
+          <div style="display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 24px;">
+            <a href="#10a" class="bwspack" style="border: 1px solid #22222a; display: flex; flex-direction: column;">
+              <div class="bwsph" style="position: relative; aspect-ratio: 4/3; background: repeating-linear-gradient(135deg, #0b0b0e 0 8px, #101015 8px 16px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;">
+                <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; letter-spacing: .16em; color: #4ADE80;">RENDER PENDIENTE</div>
+                <div style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .1em; color: #55555f;">RUINAS EN L</div>
+              </div>
+              <div style="padding: 22px 22px 20px;">
+                <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 14px;">
+                  <div style="font-size: 20px; font-weight: 600; letter-spacing: -.01em;">Ruined Buildings</div>
+                  <span class="bwsslot-half" style="flex: none; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .1em; padding: 4px 7px;">1/2 SLOT</span>
+                </div>
+                <p class="bwsmuted" style="margin: 14px 0 0; font-size: 14px; line-height: 1.6; color: #a1a1aa;">8 piezas en L de ruinas altas y piezas bajas con el mismo footprint.</p>
+                <div class="bwsrule" style="display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; margin-top: 20px; padding-top: 16px; border-top: 1px solid #1e1e24;">
+                  <div>
+                    <div class="bwsfaint" style="font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; letter-spacing: .13em; color: #55555f;">PIEZAS</div>
+                    <div style="margin-top: 5px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #ededf0;">08</div>
+                  </div>
+                  <div>
+                    <div class="bwsfaint" style="font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; letter-spacing: .13em; color: #55555f;">PRECIO</div>
+                    <div style="margin-top: 5px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #ededf0;">—</div>
+                  </div>
+                  <div>
+                    <div class="bwsfaint" style="font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; letter-spacing: .13em; color: #55555f;">FABRIC.</div>
+                    <div style="margin-top: 5px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #ededf0;">—</div>
+                  </div>
+                </div>
+                <div class="bwspack-cta" style="margin-top: 20px; display: flex; align-items: center; justify-content: space-between; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .12em;">VER FICHA<span class="bwspack-arrow">→</span></div>
+              </div>
+            </a>
+
+            <a href="#10a" class="bwspack" style="border: 1px solid #22222a; display: flex; flex-direction: column;">
+              <div class="bwsph" style="position: relative; aspect-ratio: 4/3; background: repeating-linear-gradient(135deg, #0b0b0e 0 8px, #101015 8px 16px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;">
+                <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; letter-spacing: .16em; color: #4ADE80;">RENDER PENDIENTE</div>
+                <div style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .1em; color: #55555f;">ACUEDUCTO Y BARRICADAS</div>
+              </div>
+              <div style="padding: 22px 22px 20px;">
+                <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 14px;">
+                  <div style="font-size: 20px; font-weight: 600; letter-spacing: -.01em;">Blockers &amp; Barricadas</div>
+                  <span class="bwsslot-half" style="flex: none; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .1em; padding: 4px 7px;">1/2 SLOT</span>
+                </div>
+                <p class="bwsmuted" style="margin: 14px 0 0; font-size: 14px; line-height: 1.6; color: #a1a1aa;">Dispositivos de energía, acueducto alto y barricadas.</p>
+                <div class="bwsrule" style="display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; margin-top: 20px; padding-top: 16px; border-top: 1px solid #1e1e24;">
+                  <div>
+                    <div class="bwsfaint" style="font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; letter-spacing: .13em; color: #55555f;">PIEZAS</div>
+                    <div style="margin-top: 5px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #ededf0;">—</div>
+                  </div>
+                  <div>
+                    <div class="bwsfaint" style="font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; letter-spacing: .13em; color: #55555f;">PRECIO</div>
+                    <div style="margin-top: 5px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #ededf0;">—</div>
+                  </div>
+                  <div>
+                    <div class="bwsfaint" style="font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; letter-spacing: .13em; color: #55555f;">FABRIC.</div>
+                    <div style="margin-top: 5px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #ededf0;">—</div>
+                  </div>
+                </div>
+                <div class="bwspack-cta" style="margin-top: 20px; display: flex; align-items: center; justify-content: space-between; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .12em;">VER FICHA<span class="bwspack-arrow">→</span></div>
+              </div>
+            </a>
+
+            <a href="#10a" class="bwspack" style="border: 1px solid #22222a; display: flex; flex-direction: column;">
+              <div class="bwsph" style="position: relative; aspect-ratio: 4/3; background: repeating-linear-gradient(135deg, #0b0b0e 0 8px, #101015 8px 16px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;">
+                <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; letter-spacing: .16em; color: #4ADE80;">RENDER PENDIENTE</div>
+                <div style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .1em; color: #55555f;">MUROS BAJOS</div>
+              </div>
+              <div style="padding: 22px 22px 20px;">
+                <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 14px;">
+                  <div style="font-size: 20px; font-weight: 600; letter-spacing: -.01em;">Rubble Walls</div>
+                  <span class="bwsslot-half" style="flex: none; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .1em; padding: 4px 7px;">1/2 SLOT</span>
+                </div>
+                <p class="bwsmuted" style="margin: 14px 0 0; font-size: 14px; line-height: 1.6; color: #a1a1aa;">Muros bajos de escombros.</p>
+                <div class="bwsrule" style="display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; margin-top: 20px; padding-top: 16px; border-top: 1px solid #1e1e24;">
+                  <div>
+                    <div class="bwsfaint" style="font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; letter-spacing: .13em; color: #55555f;">PIEZAS</div>
+                    <div style="margin-top: 5px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #ededf0;">—</div>
+                  </div>
+                  <div>
+                    <div class="bwsfaint" style="font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; letter-spacing: .13em; color: #55555f;">PRECIO</div>
+                    <div style="margin-top: 5px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #ededf0;">—</div>
+                  </div>
+                  <div>
+                    <div class="bwsfaint" style="font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; letter-spacing: .13em; color: #55555f;">FABRIC.</div>
+                    <div style="margin-top: 5px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #ededf0;">—</div>
+                  </div>
+                </div>
+                <div class="bwspack-cta" style="margin-top: 20px; display: flex; align-items: center; justify-content: space-between; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .12em;">VER FICHA<span class="bwspack-arrow">→</span></div>
+              </div>
+            </a>
+          </div>
+
+          <!-- pie del catálogo: nota de datos + enlace STL -->
+          <div class="bwsrule" style="display: flex; align-items: center; justify-content: space-between; gap: 40px; margin-top: 32px; padding-top: 22px; border-top: 1px solid #1e1e24;">
+            <span class="bwsfaint" style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .1em; color: #55555f;">PIEZAS, PRECIO Y TIEMPO DE FABRICACIÓN PENDIENTES DE CIERRE</span>
+            <span class="bwsmuted" style="font-size: 14px; color: #a1a1aa;">¿Prefieres imprimirlo tú? <a href="#10a" class="bwslink">Catálogo STL<span class="bwsarrow">→</span></a></span>
+          </div>
+        </div>
+
+        <!-- BLOQUE 3 · RUTAS DE DECISIÓN -->
+        <div class="bwsalt" style="padding: 64px 56px; background: #0d0d10; border-top: 1px solid #17171a; border-bottom: 1px solid #17171a;">
+          <div style="display: flex; align-items: baseline; gap: 18px; margin-bottom: 8px;">
+            <h3 style="margin: 0; font-size: 13px; font-family: 'IBM Plex Mono', monospace; font-weight: 500; letter-spacing: .16em; color: #4ADE80;">03 · QUÉ PACK NECESITAS</h3>
+          </div>
+          <p class="bwsmuted" style="margin: 0 0 28px; max-width: 720px; font-size: 14.5px; line-height: 1.6; color: #a1a1aa;">Tres situaciones, una salida cada una.</p>
+          <div style="display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 24px;">
+            <a href="#10a" class="bwsruta" style="border: 1px solid #22222a; padding: 26px 24px 22px; display: flex; flex-direction: column; gap: 14px;">
+              <span class="bwsfaint" style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .14em; color: #55555f;">RUTA 01</span>
+              <div style="font-size: 21px; font-weight: 600; line-height: 1.25; letter-spacing: -.01em;">Necesito montar una mesa completa</div>
+              <p class="bwsmuted" style="margin: 0; font-size: 14px; line-height: 1.6; color: #a1a1aa;">No tienes escenografía o quieres una mesa de torneo entera con un solo pedido.</p>
+              <div class="bwsruta-cta" style="margin-top: auto; padding-top: 12px; display: flex; align-items: center; justify-content: space-between; font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; letter-spacing: .12em;">TOURNAMENT · 1 SLOT<span class="bwspack-arrow">→</span></div>
+            </a>
+            <a href="#10a" class="bwsruta" style="border: 1px solid #22222a; padding: 26px 24px 22px; display: flex; flex-direction: column; gap: 14px;">
+              <span class="bwsfaint" style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .14em; color: #55555f;">RUTA 02</span>
+              <div style="font-size: 21px; font-weight: 600; line-height: 1.25; letter-spacing: -.01em;">Me vale media mesa</div>
+              <p class="bwsmuted" style="margin: 0; font-size: 14px; line-height: 1.6; color: #a1a1aa;">Juegas compartiendo mesa con otro jugador o prefieres empezar por la mitad y ampliar después.</p>
+              <div class="bwsruta-cta" style="margin-top: auto; padding-top: 12px; display: flex; align-items: center; justify-content: space-between; font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; letter-spacing: .12em;">BATTLE READY · 1/2 SLOT<span class="bwspack-arrow">→</span></div>
+            </a>
+            <a href="#10a" class="bwsruta" style="border: 1px solid #22222a; padding: 26px 24px 22px; display: flex; flex-direction: column; gap: 14px;">
+              <span class="bwsfaint" style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .14em; color: #55555f;">RUTA 03</span>
+              <div style="font-size: 21px; font-weight: 600; line-height: 1.25; letter-spacing: -.01em;">Ya tengo la base y me faltan piezas</div>
+              <p class="bwsmuted" style="margin: 0; font-size: 14px; line-height: 1.6; color: #a1a1aa;">Buscas una familia concreta: ruinas altas, barricadas y acueducto o muros bajos.</p>
+              <div class="bwsruta-cta" style="margin-top: auto; padding-top: 12px; display: flex; align-items: center; justify-content: space-between; font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; letter-spacing: .12em;">3 PACKS DE PIEZAS<span class="bwspack-arrow">→</span></div>
+            </a>
+          </div>
+        </div>
+
+        <!-- footer -->
+        <div class="bwsdark" style="position: relative; padding: 72px 56px 40px; background: #08080a; overflow: hidden;">
+          <div style="display: grid; grid-template-columns: 1fr auto auto; gap: 80px; padding-bottom: 64px; border-bottom: 1px solid #1c1c22;">
+            <div>
+              <div style="font-size: 46px; line-height: 1.05; font-weight: 600; letter-spacing: -.035em; max-width: 520px;">Hecho por jugadores<br>para jugadores.</div>
+              <div style="margin-top: 22px; font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; letter-spacing: .14em; color: #4ADE80;">SLIDER SYSTEM™ · ESCENOGRAFÍA MODULAR 3D</div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 14px; font-size: 14px; color: #a1a1aa;">
+              <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .14em; color: #55555f; margin-bottom: 4px;">TIENDA</div>
+              <a href="#10a" class="bwsnav">Packs</a><a href="#10a" class="bwsnav">Archivos STL</a><a href="#10a" class="bwsnav">Slider System</a><a href="#10a" class="bwsnav">FAQ</a>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 14px; font-size: 14px; color: #a1a1aa;">
+              <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .14em; color: #55555f; margin-bottom: 4px;">ESTUDIO</div>
+              <a href="#10a" class="bwsnav">Sobre nosotros</a><a href="#10a" class="bwsnav">Contacto</a><a href="#10a" class="bwsnav">Instagram</a><a href="#10a" class="bwsnav">Blog</a>
+            </div>
+          </div>
+          <div style="position: absolute; right: 32px; bottom: 96px; display: flex; align-items: center; gap: 12px; background: rgba(14,14,17,.94); border: 1px solid #2c2c33; padding: 11px 14px;">
+            <span style="width: 7px; height: 7px; border-radius: 50%; background: #4ADE80; animation: blink 2.4s infinite;"></span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; letter-spacing: .1em; color: #ededf0;">TANDA 01</span>
+            <span style="display: flex; gap: 5px;"><span style="width: 9px; height: 9px; border-radius: 50%; background: #4ADE80;"></span><span style="width: 9px; height: 9px; border-radius: 50%; border: 1px solid #4ADE80;"></span></span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7d7d86;">+</span>
+          </div>
+          <img src="logos/bws-full-light.svg" alt="Brutal Work Studio" style="display: block; width: 100%; margin: 48px 0 32px; opacity: .16;">
+          <div style="display: flex; justify-content: space-between; align-items: center; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .08em; color: #55555f;">
+            <span>© 2026 BRUTAL WORK STUDIO</span>
+            <div style="display: flex; gap: 22px;">
+              <a href="#10a" class="bwsnav">Aviso legal</a><a href="#10a" class="bwsnav">Privacidad</a><a href="#10a" class="bwsnav">Cookies</a><a href="#10a" class="bwsnav">Términos y condiciones</a><a href="#10a" class="bwsnav">Envíos y devoluciones</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- módulo flotante de slots (idéntico al resto · fixed en producción) -->
+        <div style="position: absolute; right: 32px; top: 168px; z-index: 30; width: 372px; background: rgba(14,14,17,.94); border: 1px solid #2c2c33; backdrop-filter: blur(10px); box-shadow: 0 24px 60px rgba(0,0,0,.55);">
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border-bottom: 1px solid #22222a;">
+            <div style="display: flex; align-items: center; gap: 9px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .14em; color: #a1a1aa;"><span style="width: 6px; height: 6px; border-radius: 50%; background: #4ADE80; animation: blink 2.4s infinite;"></span>FABRICACIÓN EN VIVO</div>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #7d7d86;">—</span>
+          </div>
+          <div style="padding: 6px 0;">
+            <div style="display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-bottom: 1px solid #1a1a20;">
+              <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: .06em; width: 74px; color: #ededf0;">TANDA 01</span>
+              <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .1em; color: #4ADE80; flex: 1;">PRÓXIMA ENTREGA</span>
+              <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: #a1a1aa;">1 libre</span>
+              <span style="display: flex; gap: 5px;"><span style="width: 9px; height: 9px; border-radius: 50%; background: #4ADE80;"></span><span style="width: 9px; height: 9px; border-radius: 50%; border: 1px solid #4ADE80;"></span></span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-bottom: 1px solid #1a1a20;">
+              <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: .06em; width: 74px; color: #a1a1aa;">TANDA 02</span>
+              <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .1em; color: #7d7d86; flex: 1;">LISTA DE ESPERA</span>
+              <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: #7d7d86;">2 libres</span>
+              <span style="display: flex; gap: 5px;"><span style="width: 9px; height: 9px; border-radius: 50%; border: 1px solid #4a4a55;"></span><span style="width: 9px; height: 9px; border-radius: 50%; border: 1px solid #4a4a55;"></span></span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-bottom: 1px solid #1a1a20;">
+              <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: .06em; width: 74px; color: #a1a1aa;">TANDA 03</span>
+              <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .1em; color: #7d7d86; flex: 1;">LISTA DE ESPERA</span>
+              <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: #7d7d86;">2 libres</span>
+              <span style="display: flex; gap: 5px;"><span style="width: 9px; height: 9px; border-radius: 50%; border: 1px solid #4a4a55;"></span><span style="width: 9px; height: 9px; border-radius: 50%; border: 1px solid #4a4a55;"></span></span>
+            </div>
+          </div>
+          <a href="#10a" class="bwsbtn-p bwsbtn-solid" style="display: flex; width: 100%; height: 48px; padding: 0; font-size: 14px; background: #4ADE80; border-color: #4ADE80; color: #06120c; font-weight: 600;">Reservar slot · Tanda 01</a>
+        </div>
+      </div>
+
+      <div style="width: 1440px; border-left: 2px solid #17A354; padding: 4px 0 4px 16px;">
+        <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #4c4842;">La jerarquía hace el trabajo de decisión antes de leer: dos tarjetas de mesa a 652px con render 16/9 y tres de piezas a 427px con 4/3. El coste es que Battle Ready gana el mismo peso visual que Tournament, y que los tres secundarios pueden leerse como accesorios de segunda.</p>
+      </div>
+    </div>
+  </div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1600},&quot;tema&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;dark&quot;,&quot;light&quot;],&quot;default&quot;:&quot;dark&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Apariencia&quot;}}">
+class Component extends DCLogic {
+  componentDidMount() {
+    this.apply("bws-root", this.props.tema || "dark");
+    this.apply("bws-root-b", this.props.temaB || this.props.tema || "dark");
+  }
+  componentDidUpdate(prev) {
+    if (prev.tema !== this.props.tema) {
+      this.apply("bws-root", this.props.tema || "dark");
+      this.apply("bws-root-b", this.props.temaB || this.props.tema || "dark");
+    }
+    if (prev.temaB !== this.props.temaB) this.apply("bws-root-b", this.props.temaB || "dark");
+  }
+  apply(id, t) {
+    const root = document.getElementById(id);
+    if (!root) return;
+    root.classList.add("bwsnotrans");
+    root.dataset.theme = t;
+    requestAnimationFrame(() => root.classList.remove("bwsnotrans"));
+  }
+  flip(id) {
+    const root = document.getElementById(id);
+    if (root) this.apply(id, root.dataset.theme === "light" ? "dark" : "light");
+  }
+  renderVals() {
+    return {
+      toggleTheme: () => this.flip("bws-root"),
+      toggleThemeB: () => this.flip("bws-root-b")
+    };
+  }
+}
+</script>
+</body>
+</html>

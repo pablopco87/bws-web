@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<meta name="ext-resource-dependency" content="dovetail-mesh-hd.json" data-resource-id="wire">
+<link id="bws-wire-src" rel="preload" as="fetch" crossorigin href="dovetail-mesh-hd.json">
+<template id="__bundler_thumbnail" data-bg-color="#0a0a0b">
+  <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#0a0a0b"></rect><g fill="none" stroke="#4ADE80" stroke-width="2.6"><path d="M18 44h30v6l14 4v-4l14 4v-6h26"></path><path d="M18 76h30v-6l14-4v4l14-4v6h26"></path></g></svg>
+</template>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: #e7e5e1; }
+  a { color: inherit; text-decoration: none; }
+  a:hover { text-decoration: none; }
+  @keyframes blink { 0%, 62% { opacity: 1; } 63%, 100% { opacity: .22; } }
+  @keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+  .bwsline { opacity: 0; transform: translateY(26px); animation: rise .9s cubic-bezier(.16,1,.3,1) forwards; }
+  .bwsr { opacity: 1; transform: none; transition: opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1); }
+  .bwsr.armed { opacity: 0; transform: translateY(22px); }
+  .bwsr.armed.in { opacity: 1; transform: none; }
+  .bwsnav { transition: color .18s; }
+  .bwsnav:hover { color: #4ADE80; }
+  .bwspack { transition: border-color .25s, background .25s, transform .35s cubic-bezier(.16,1,.3,1); }
+  .bwspack:hover { border-color: #4ADE80; background: #101014; transform: translateY(-4px); }
+  .bwsbtn-p, .bwsbtn-s { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; gap: 10px; height: 52px; line-height: 1; padding: 0 26px; font-size: 15px; font-weight: 500; border: 1px solid transparent; transition: background .22s cubic-bezier(.16,1,.3,1), color .22s, border-color .22s, box-shadow .22s, transform .22s; }
+  .bwsbtn-p { border-color: #4ADE80; color: #4ADE80; }
+  .bwsbtn-p:hover { background: #6bf39b; border-color: #6bf39b; color: #06120c; box-shadow: 0 10px 28px rgba(74,222,128,.18); transform: translateY(-2px); }
+  .bwsbtn-s { border-color: #33333a; color: #ededf0; }
+  .bwsbtn-s:hover { border-color: #4ADE80; color: #4ADE80; background: rgba(74,222,128,.07); transform: translateY(-2px); }
+  .bwslink { display: inline-flex; align-items: center; gap: 7px; color: #4ADE80; border-bottom: 1px solid rgba(74,222,128,.32); padding-bottom: 2px; transition: color .2s, border-color .2s; }
+  .bwslink:hover { color: #9dfcc2; border-color: #9dfcc2; }
+  .bwslink .bwsarrow { font-family: 'IBM Plex Mono', monospace; transition: transform .25s cubic-bezier(.16,1,.3,1); }
+  .bwslink:hover .bwsarrow { transform: translateX(4px); }
+  .bwsstl { transition: border-color .25s, background .25s; }
+  .bwsstl:hover { border-color: #4ADE80; background: linear-gradient(90deg, rgba(74,222,128,.14), transparent 62%); }
+  .bwsstl:hover .bwsstl-cta { background: #6bf39b; border-color: #6bf39b; color: #06120c; transform: translateY(-2px); }
+  .bwsvs { transition: border-color .25s, background .25s; }
+  .bwsvs:hover { border-color: #4ADE80; background: #101014; }
+  .bwsvs:hover .bwsvs-n { color: #4ADE80; }
+  .bwstoggle { position: relative; display: inline-flex; align-items: center; width: 58px; height: 28px; border: 1px solid #33333a; border-radius: 999px; cursor: pointer; background: transparent; padding: 0; transition: border-color .25s; }
+  .bwstoggle:hover { border-color: #4ADE80; }
+  .bwstoggle-knob { position: absolute; top: 2px; left: 2px; width: 22px; height: 22px; border-radius: 50%; background: #4ADE80; transition: transform .38s cubic-bezier(.16,1,.3,1); }
+  .bwstoggle svg { position: relative; z-index: 1; width: 13px; height: 13px; flex: none; transition: color .3s, opacity .3s; }
+  .bwstoggle .bwsicon-moon { margin-left: 6.5px; color: #06120c; }
+  .bwstoggle .bwsicon-sun { margin-left: 15px; color: #7d7d86; opacity: .8; }
+  .bwsnotrans, .bwsnotrans * { transition: none !important; }
+
+  #bws-mate { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+  .bwsslide { display: none; }
+  .bwsslide.active { display: block; }
+  .bwsdot { width: 8px; height: 8px; border: 1px solid #4a4a55; background: transparent; padding: 0; cursor: pointer; transition: background .2s, border-color .2s; }
+  .bwsdot:hover { border-color: #4ADE80; }
+  .bwsdot.active { background: #4ADE80; border-color: #4ADE80; }
+  #bws-root[data-theme="light"] .bwsdot { border-color: #C6C3B9; }
+  #bws-root[data-theme="light"] .bwsdot.active { background: #17A354; border-color: #17A354; }
+  #bws-cmp { cursor: ew-resize; touch-action: none; }
+  .bwslbnav { cursor: pointer; transition: border-color .2s, color .2s, background .2s; }
+  .bwslbnav:hover { border-color: #4ADE80; color: #4ADE80; background: rgba(74,222,128,.08); }
+  #bws-root[data-theme="light"] .bwslbnav { border-color: #CFCCC2 !important; color: #17181A !important; }
+  #bws-root[data-theme="light"] .bwslbnav:hover { border-color: #17A354 !important; color: #17A354 !important; background: rgba(23,163,84,.08) !important; }
+
+  /* rango de acople */
+  .bwsrange { -webkit-appearance: none; appearance: none; width: 100%; height: 2px; background: #33333a; outline: none; cursor: pointer; }
+  .bwsrange::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; background: #4ADE80; border: 0; cursor: grab; }
+  .bwsrange::-moz-range-thumb { width: 16px; height: 16px; background: #4ADE80; border: 0; border-radius: 0; cursor: grab; }
+
+  /* ---------- LIGHT MODE ---------- */
+  #bws-root { transition: background .4s ease, color .4s ease, border-color .4s ease; }
+  #bws-root[data-theme="light"] { background: #FAFAF9 !important; color: #17181A !important; border-color: #DEDCD4 !important; }
+  #bws-root[data-theme="light"] [stroke="#8f8f99"] { stroke: #B7B8AF !important; }
+  #bws-root[data-theme="light"] [stroke="#4ADE80"] { stroke: #17A354 !important; }
+  #bws-root[data-theme="light"] [fill="#4ADE80"] { fill: #17A354 !important; }
+  #bws-root[data-theme="light"] .bwslogo { filter: invert(1) brightness(.18); }
+  #bws-root[data-theme="light"] .bwsnav:hover, #bws-root[data-theme="light"] .bwslink { color: #17A354 !important; }
+  #bws-root[data-theme="light"] .bwslink { border-color: rgba(23,163,84,.32) !important; }
+  #bws-root[data-theme="light"] .bwslink:hover { color: #0F7C3E !important; border-color: #0F7C3E !important; }
+  #bws-root[data-theme="light"] .bwsbtn-p:not(.bwsbtn-solid) { border-color: #17A354 !important; color: #17A354 !important; }
+  #bws-root[data-theme="light"] .bwsbtn-solid { background: #17A354 !important; border-color: #17A354 !important; color: #FAFAF9 !important; }
+  #bws-root[data-theme="light"] .bwsbtn-solid:hover { background: #0F7C3E !important; border-color: #0F7C3E !important; }
+  #bws-root[data-theme="light"] .bwsbtn-p:hover { background: #4ADE80 !important; border-color: #4ADE80 !important; color: #06120C !important; }
+  #bws-root[data-theme="light"] .bwsbtn-s { border-color: #CFCCC2 !important; color: #17181A !important; }
+  #bws-root[data-theme="light"] .bwsbtn-s:hover { border-color: #17A354 !important; color: #17A354 !important; background: rgba(74,222,128,.09) !important; }
+  #bws-root[data-theme="light"] .bwsalt { background: #F1F0EC !important; }
+  #bws-root[data-theme="light"] .bwsalt .bwspack, #bws-root[data-theme="light"] .bwsalt .bwscard { background: #FAFAF9 !important; }
+  #bws-root[data-theme="light"] .bwspack, #bws-root[data-theme="light"] .bwscard { border-color: #E0DED6 !important; }
+  #bws-root[data-theme="light"] .bwspack:hover { border-color: #17A354 !important; background: #F4F3F0 !important; }
+  #bws-root[data-theme="light"] .bwsvs:hover { border-color: #17A354 !important; background: #F4F3F0 !important; }
+  #bws-root[data-theme="light"] .bwsvs:hover .bwsvs-n { color: #17A354 !important; }
+  #bws-root[data-theme="light"] .bwshatch { background: repeating-linear-gradient(135deg, #EFEEE9 0 8px, #E6E4DE 8px 16px) !important; border-color: #CFCCC2 !important; }
+  #bws-root[data-theme="light"] .bwsmuted { color: #6E6F66 !important; }
+  #bws-root[data-theme="light"] .bwsfaint { color: #9B9C91 !important; }
+  #bws-root[data-theme="light"] .bwsrule { border-color: #E0DED6 !important; }
+  #bws-root[data-theme="light"] .bwstoggle { border-color: #CFCCC2; }
+  #bws-root[data-theme="light"] .bwstoggle-knob { transform: translateX(30px); background: #17A354; }
+  #bws-root[data-theme="light"] .bwstoggle .bwsicon-moon { color: #9B9C91; opacity: .8; }
+  #bws-root[data-theme="light"] .bwstoggle .bwsicon-sun { color: #FAFAF9; opacity: 1; }
+  #bws-root[data-theme="light"] .bwsdark { background: #F1F0EC !important; color: #17181A !important; }
+  #bws-root[data-theme="light"] .bwsdark img { filter: invert(1) brightness(.2); }
+  #bws-root[data-theme="light"] .bwsrange { background: #CFCCC2; }
+  #bws-root[data-theme="light"] .bwsrange::-webkit-slider-thumb { background: #17A354; }
+  #bws-root[data-theme="light"] .bwsviewer { background: #F1F0EC !important; }
+
+  #bws-root[data-theme="light"] [style*="background: rgb(10, 10, 11)"],
+  #bws-root[data-theme="light"] [style*="background: rgb(8, 8, 10)"],
+  #bws-root[data-theme="light"] [style*="background: rgb(14, 14, 17)"] { background: #FAFAF9 !important; }
+  #bws-root[data-theme="light"] [style*="background: rgb(34, 34, 42)"] { background: #E4E2DA !important; }
+  #bws-root[data-theme="light"] [style*="rgb(34, 34, 42)"],
+  #bws-root[data-theme="light"] [style*="rgb(23, 23, 26)"],
+  #bws-root[data-theme="light"] [style*="rgb(26, 26, 32)"],
+  #bws-root[data-theme="light"] [style*="rgb(28, 28, 34)"],
+  #bws-root[data-theme="light"] [style*="rgb(44, 44, 51)"],
+  #bws-root[data-theme="light"] [style*="rgb(38, 38, 42)"] { border-color: #E4E2DA !important; }
+  #bws-root[data-theme="light"] [style*="dashed rgb(58, 58, 66)"] { border-color: #D3D0C6 !important; }
+  #bws-root[data-theme="light"] [style*="rgb(51, 51, 58)"] { border-color: #CFCCC2 !important; }
+  #bws-root[data-theme="light"] [style*="repeating-linear-gradient(135deg, rgb(11, 11, 14)"] { background: repeating-linear-gradient(135deg, #F2F1EC 0 8px, #E9E7E1 8px 16px) !important; }
+  #bws-root[data-theme="light"] [style*="repeating-linear-gradient(90deg, rgb(8, 8, 10)"] { background: repeating-linear-gradient(90deg, #DCD9CF 0 3px, #F4F3EF 3px 24px) !important; }
+  #bws-root[data-theme="light"] [style*="rgba(14, 14, 17, 0.94)"] { background: rgba(250, 250, 249, .96) !important; box-shadow: 0 24px 60px rgba(23,24,26,.13) !important; }
+  #bws-root[data-theme="light"] [style*="color: rgb(237, 237, 240)"] { color: #17181A !important; }
+  #bws-root[data-theme="light"] [style*="color: rgb(161, 161, 170)"] { color: #64655D !important; }
+  #bws-root[data-theme="light"] [style*="color: rgb(125, 125, 134)"] { color: #82837A !important; }
+  #bws-root[data-theme="light"] [style*="color: rgb(85, 85, 95)"] { color: #9B9C91 !important; }
+  #bws-root[data-theme="light"] [style*="color: rgb(74, 222, 128)"] { color: #17A354 !important; }
+  #bws-root[data-theme="light"] [style*="background: rgb(74, 222, 128)"] { background: #17A354 !important; color: #FAFAF9 !important; }
+  #bws-root[data-theme="light"] [style*="border: 1px solid rgba(74, 222, 128, 0.34)"] { border-color: rgba(23,163,84,.38) !important; }
+  #bws-root[data-theme="light"] [style*="solid rgb(74, 222, 128)"] { border-color: #17A354 !important; }
+  #bws-root[data-theme="light"] a[style*="color: rgb(237, 237, 240)"] { color: #17181A !important; }
+  #bws-root[data-theme="light"] svg text[fill="#4ADE80"] { fill: #17A354 !important; }
+
+  /* --- header: desplegable Packs (mega-menú) --- */
+  .bwshas { position: static; }
+  .bwstrigger { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; background: transparent; border: 0; padding: 0; font-family: 'Archivo', system-ui, sans-serif; font-size: 14px; color: inherit; transition: color .18s; }
+  .bwscaret { transition: transform .28s cubic-bezier(.16,1,.3,1); }
+  .bwsdrop { position: absolute; top: 84px; left: 56px; right: 56px; z-index: 60; padding-top: 14px; opacity: 0; visibility: hidden; transform: translateY(-6px); transition: opacity .22s ease, transform .28s cubic-bezier(.16,1,.3,1), visibility .22s; }
+  .bwshas:hover .bwsdrop, .bwshas:focus-within .bwsdrop { opacity: 1; visibility: visible; transform: none; }
+  .bwshas:hover > .bwstrigger, .bwshas:focus-within > .bwstrigger { color: #4ADE80; }
+  .bwshas:hover .bwscaret, .bwshas:focus-within .bwscaret { transform: rotate(180deg); }
+  .bwsdrop-panel { background: rgba(14,14,17,.97); border: 1px solid #2c2c33; box-shadow: 0 26px 64px rgba(0,0,0,.6); }
+  .bwsdroprule { border-bottom: 1px solid #22222a; }
+  .bwsmega { border: 1px solid #22222a; transition: border-color .25s, background .25s; }
+  .bwsmega:hover { border-color: #4ADE80; background: #101014; }
+  .bwsmeganame { color: #ededf0; transition: color .2s; }
+  .bwsmegalabel { color: #7d7d86; }
+  .bwsmegacta { color: #4ADE80; }
+  .bwsslot-full { color: #4ADE80; border: 1px solid rgba(74,222,128,.34); }
+  .bwsslot-half { color: #7d7d86; border: 1px solid #33333a; }
+  .bwsmega:hover .bwsmeganame { color: #4ADE80; }
+  .bwsmegabg { background-image: linear-gradient(#16161c 1px, transparent 1px), linear-gradient(90deg, #16161c 1px, transparent 1px); background-size: 22px 22px; }
+  #bws-root[data-theme="light"] .bwsdrop-panel { background: rgba(250,250,249,.98) !important; border-color: #DEDCD4 !important; box-shadow: 0 26px 64px rgba(0,0,0,.14) !important; }
+  #bws-root[data-theme="light"] .bwsdroprule { border-color: #E0DED6 !important; }
+  #bws-root[data-theme="light"] .bwsmega { border-color: #E0DED6 !important; }
+  #bws-root[data-theme="light"] .bwsmega:hover { border-color: #17A354 !important; background: #F1F0EC !important; }
+  #bws-root[data-theme="light"] .bwsmegabg { background-image: linear-gradient(#E6E4DC 1px, transparent 1px), linear-gradient(90deg, #E6E4DC 1px, transparent 1px) !important; }
+  #bws-root[data-theme="light"] .bwsmeganame { color: #17181A !important; }
+  #bws-root[data-theme="light"] .bwsmega:hover .bwsmeganame { color: #17A354 !important; }
+  #bws-root[data-theme="light"] .bwsmegalabel { color: #6E6F66 !important; }
+  #bws-root[data-theme="light"] .bwsmegacta { color: #17A354 !important; }
+  #bws-root[data-theme="light"] .bwsslot-full { color: #17A354 !important; border-color: rgba(23,163,84,.4) !important; }
+  #bws-root[data-theme="light"] .bwsslot-half { color: #6E6F66 !important; border-color: #CFCCC2 !important; }
+  #bws-root[data-theme="light"] .bwstrigger:hover { color: #17A354 !important; }
+
+
+  #bws-root[data-theme="light"] [style*="width: 1px"][style*="background: rgb(38, 38, 42)"] { background: #E4E2DA !important; }
+</style>
+</helmet>
+
+<section style="padding: 72px 80px 160px; font-family: 'Archivo', system-ui, sans-serif;">
+  <div style="display: flex; align-items: baseline; gap: 20px; margin-bottom: 12px;">
+    <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: #7c766c;">Turno 6</span>
+    <h1 style="margin: 0; font-size: 28px; font-weight: 600; color: #1b1a18;">BWS — Slider System, página de autoridad técnica</h1>
+  </div>
+  <p style="margin: 0 0 44px; max-width: 880px; font-size: 15px; line-height: 1.6; color: #4c4842;">Seis zonas en el orden del Brief. El hero usa la geometría real de tus STL (FD2pA + FD2pB), con el mismo tratamiento de wireframe que el hero de Inicio: el modelo arranca quieto y encajado, se gira arrastrando, y el macho (FD2pB) sube y baja con el control de acople. La pose de la unión está leída del ensamblaje FD2.stl. Datos sin cerrar en <span style="font-family: 'IBM Plex Mono', monospace; color: #17A354;">[corchetes mono]</span>.</p>
+
+  <div id="6a" style="display: flex; flex-direction: column; gap: 20px;">
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: .1em; background: #1b1a18; color: #f4f2ee; padding: 5px 9px;">6a</span>
+      <span style="font-size: 15px; font-weight: 600; color: #1b1a18;">Slider System · desktop 1440</span>
+      <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7c766c;">hereda tokens de Inicio v4 y Producto</span>
+    </div>
+
+    <div id="bws-root" data-theme="dark" style="position: relative; width: 1440px; background: #0a0a0b; color: #ededf0; overflow: hidden; border: 1px solid #26262a;">
+
+      <div style="position: relative; z-index: 20; display: flex; align-items: center; justify-content: space-between; padding: 0 56px; height: 84px; border-bottom: 1px solid rgba(255,255,255,.07);">
+        <a href="#6a" aria-label="Brutal Work Studio · inicio"><img class="bwslogo" src="logos/bws-wordmark-light.svg" alt="Brutal Work Studio" style="height: 30px; width: auto;"></a>
+        <div style="display: flex; align-items: center; gap: 34px; font-size: 14px; color: #a1a1aa;">
+          <div class="bwshas">
+            <button type="button" class="bwstrigger" aria-expanded="false">Packs
+              <svg class="bwscaret" width="9" height="6" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M1 1l4 4 4-4"></path></svg>
+            </button>
+            <div class="bwsdrop">
+              <div class="bwsdrop-panel">
+                <div class="bwsdroprule" style="display: flex; align-items: center; justify-content: space-between; padding: 14px 24px;">
+                  <span class="bwsmegalabel" style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .14em;">PACKS FÍSICOS · 5 VARIANTES</span>
+                  <a href="#6a" class="bwsmegacta" style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .12em;">VER LOS 5 PACKS →</a>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 16px; padding: 22px 24px 24px;">
+                  <a href="#6a" class="bwsmega" style="display: flex; flex-direction: column;">
+                    <div class="bwsmegabg bwsdroprule" style="position: relative; aspect-ratio: 4/3; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                      <svg viewBox="0 0 200 140" style="height: 66%; width: auto;" fill="none" stroke="#4ADE80" stroke-width="1.1" opacity=".68"><path d="M24 96 L100 56 L176 96 L100 136 Z"></path><path d="M24 96 V60 L100 20 L176 60 v36"></path><path d="M100 20 V56"></path></svg>
+                      <span style="position: absolute; bottom: 8px; left: 9px; font-family: 'IBM Plex Mono', monospace; font-size: 8.5px; letter-spacing: .12em; color: #3a3a42;">RENDER PENDIENTE</span>
+                    </div>
+                    <div style="padding: 13px 14px 15px;">
+                      <div class="bwsmeganame" style="font-size: 14px; font-weight: 500;">Tournament</div>
+                      <div class="bwsslot-full" style="margin-top: 9px; display: inline-block; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .1em; padding: 3px 6px;">1 SLOT</div>
+                    </div>
+                  </a>
+                  <a href="#6a" class="bwsmega" style="display: flex; flex-direction: column;">
+                    <div class="bwsmegabg bwsdroprule" style="position: relative; aspect-ratio: 4/3; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                      <svg viewBox="0 0 200 140" style="height: 66%; width: auto;" fill="none" stroke="#4ADE80" stroke-width="1.1" opacity=".68"><path d="M28 112 h144 M28 112 V70 h60 v42 M96 112 V52 h48 v60"></path></svg>
+                      <span style="position: absolute; bottom: 8px; left: 9px; font-family: 'IBM Plex Mono', monospace; font-size: 8.5px; letter-spacing: .12em; color: #3a3a42;">RENDER PENDIENTE</span>
+                    </div>
+                    <div style="padding: 13px 14px 15px;">
+                      <div class="bwsmeganame" style="font-size: 14px; font-weight: 500;">Battle Ready</div>
+                      <div class="bwsslot-full" style="margin-top: 9px; display: inline-block; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .1em; padding: 3px 6px;">1 SLOT</div>
+                    </div>
+                  </a>
+                  <a href="#6a" class="bwsmega" style="display: flex; flex-direction: column;">
+                    <div class="bwsmegabg bwsdroprule" style="position: relative; aspect-ratio: 4/3; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                      <svg viewBox="0 0 200 140" style="height: 66%; width: auto;" fill="none" stroke="#4ADE80" stroke-width="1.1" opacity=".68"><path d="M32 116 h136 M32 116 V52 l40 -24 v64"></path><path d="M72 92 h96 v24 M112 92 V44 l56 -20 v68"></path></svg>
+                      <span style="position: absolute; bottom: 8px; left: 9px; font-family: 'IBM Plex Mono', monospace; font-size: 8.5px; letter-spacing: .12em; color: #3a3a42;">RENDER PENDIENTE</span>
+                    </div>
+                    <div style="padding: 13px 14px 15px;">
+                      <div class="bwsmeganame" style="font-size: 14px; font-weight: 500;">Ruined Buildings</div>
+                      <div class="bwsslot-half" style="margin-top: 9px; display: inline-block; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .1em; padding: 3px 6px;">1/2 SLOT</div>
+                    </div>
+                  </a>
+                  <a href="#6a" class="bwsmega" style="display: flex; flex-direction: column;">
+                    <div class="bwsmegabg bwsdroprule" style="position: relative; aspect-ratio: 4/3; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                      <svg viewBox="0 0 200 140" style="height: 66%; width: auto;" fill="none" stroke="#4ADE80" stroke-width="1.1" opacity=".68"><path d="M28 110 h144 M44 110 V78 h32 v32 M92 110 V66 h32 v44 M140 110 V86 h24 v24"></path></svg>
+                      <span style="position: absolute; bottom: 8px; left: 9px; font-family: 'IBM Plex Mono', monospace; font-size: 8.5px; letter-spacing: .12em; color: #3a3a42;">RENDER PENDIENTE</span>
+                    </div>
+                    <div style="padding: 13px 14px 15px;">
+                      <div class="bwsmeganame" style="font-size: 14px; font-weight: 500;">Blockers &amp; Barricadas</div>
+                      <div class="bwsslot-half" style="margin-top: 9px; display: inline-block; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .1em; padding: 3px 6px;">1/2 SLOT</div>
+                    </div>
+                  </a>
+                  <a href="#6a" class="bwsmega" style="display: flex; flex-direction: column;">
+                    <div class="bwsmegabg bwsdroprule" style="position: relative; aspect-ratio: 4/3; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                      <svg viewBox="0 0 200 140" style="height: 66%; width: auto;" fill="none" stroke="#4ADE80" stroke-width="1.1" opacity=".68"><path d="M28 112 h144 M28 112 V84 h144 v28 M40 84 V68 h40 v16 M104 84 V60 h44 v24"></path></svg>
+                      <span style="position: absolute; bottom: 8px; left: 9px; font-family: 'IBM Plex Mono', monospace; font-size: 8.5px; letter-spacing: .12em; color: #3a3a42;">RENDER PENDIENTE</span>
+                    </div>
+                    <div style="padding: 13px 14px 15px;">
+                      <div class="bwsmeganame" style="font-size: 14px; font-weight: 500;">Rubble Walls</div>
+                      <div class="bwsslot-half" style="margin-top: 9px; display: inline-block; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .1em; padding: 3px 6px;">1/2 SLOT</div>
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <a href="#6a" class="bwsnav">STL</a>
+          <a href="#6a" class="bwsnav" style="color: #ededf0;">Slider System</a>
+          <a href="#6a" class="bwsnav">Sobre nosotros</a>
+          <a href="#6a" class="bwsnav">FAQ</a>
+          <div class="bwsrule" style="width: 1px; height: 20px; background: #26262a;"></div>
+          <a href="#6a" class="bwsnav" style="display: flex; align-items: center; gap: 8px;">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2.2l2.2 11.2a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 2-1.55L21 8H6.2"></path><circle cx="10" cy="20" r="1.3"></circle><circle cx="17.5" cy="20" r="1.3"></circle></svg>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #4ADE80;">0</span>
+          </a>
+          <button type="button" class="bwstoggle" aria-label="Cambiar tema" onClick="{{ toggleTheme }}">
+            <span class="bwstoggle-knob"></span>
+            <svg class="bwsicon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg>
+            <svg class="bwsicon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"></path></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="bwsrule" style="display: flex; align-items: center; gap: 10px; padding: 18px 56px; border-bottom: 1px solid #17171a; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .12em; color: #55555f;">
+        <a href="#6a" class="bwsnav">INICIO</a><span>/</span><span style="color: #4ADE80;">SLIDER SYSTEM™</span>
+      </div>
+
+      <!-- ============ 1. HERO · MECANISMO ============ -->
+      <div class="bwsrule" style="padding: 72px 56px 80px; border-bottom: 1px solid #17171a;">
+        <div style="display: grid; grid-template-columns: 1fr 700px; gap: 56px; align-items: stretch;">
+          <div>
+            <div class="bwsline" style="animation-delay: .05s; display: flex; align-items: center; gap: 10px; font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; letter-spacing: .16em; color: #7d7d86;">
+              <span style="width: 6px; height: 6px; background: #4ADE80; border-radius: 50%; animation: blink 2.4s infinite;"></span>
+              UNIÓN MECÁNICA · COLA DE MILANO · SIN PEGAMENTO
+            </div>
+            <h2 class="bwsline" style="animation-delay: .14s; margin: 32px 0 0; font-size: 88px; line-height: .92; font-weight: 600; letter-spacing: -.04em;">Slider<br>System™</h2>
+            <p class="bwsline bwsmuted" style="animation-delay: .26s; margin: 28px 0 0; max-width: 470px; font-size: 18px; line-height: 1.55; color: #a1a1aa;">Una unión en cola de milano que monta y desmonta a mano, sin pegamento ni bisagras, y mantiene los 90º durante toda la partida.</p>
+
+            <div class="bwsline bwsrule" style="animation-delay: .38s; display: grid; grid-template-columns: 1fr 1fr; gap: 1px; margin-top: 44px; max-width: 470px; background: #22222a; border: 1px solid #22222a;">
+              <div class="bwscard" style="background: #0a0a0b; padding: 18px 20px;">
+                <div class="bwsfaint" style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .14em; color: #55555f;">UNIÓN</div>
+                <div style="margin-top: 7px; font-size: 20px; font-weight: 500;">Dovetail bilateral</div>
+              </div>
+              <div class="bwscard" style="background: #0a0a0b; padding: 18px 20px;">
+                <div class="bwsfaint" style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .14em; color: #55555f;">ÁNGULO</div>
+                <div style="margin-top: 7px; font-size: 20px; font-weight: 500;">90º estables</div>
+              </div>
+              <div class="bwscard" style="background: #0a0a0b; padding: 18px 20px;">
+                <div class="bwsfaint" style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .14em; color: #55555f;">MONTAJE</div>
+                <div style="margin-top: 7px; font-size: 20px; font-weight: 500;">Sin herramientas</div>
+              </div>
+              <div class="bwscard" style="background: #0a0a0b; padding: 18px 20px;">
+                <div class="bwsfaint" style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .14em; color: #55555f;">TOLERANCIA</div>
+                <div style="margin-top: 7px; font-family: 'IBM Plex Mono', monospace; font-size: 20px; font-weight: 500; color: #4ADE80;">0,15 mm</div>
+              </div>
+            </div>
+
+            <div class="bwsline" style="animation-delay: .5s; display: flex; align-items: center; gap: 14px; margin-top: 36px;">
+              <a href="#6a" class="bwsbtn-p bwsbtn-solid" style="background: #4ADE80; border-color: #4ADE80; color: #06120c; font-weight: 600;">Ver el pack Tournament</a>
+              <a href="#6a" class="bwsbtn-s">Descargar ficha técnica</a>
+            </div>
+          </div>
+
+          <!-- visor 3D -->
+          <div class="bwsline" style="animation-delay: .2s; display: flex; flex-direction: column; align-self: stretch;">
+            <div class="bwsviewer" style="position: relative; flex: 1; min-height: 420px; border: 1px solid #22222a; background: #0d0d10; overflow: hidden;">
+              <canvas id="bws-mate"></canvas>
+              <div style="position: absolute; top: 16px; left: 18px; z-index: 2; pointer-events: none; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .14em; color: #55555f;">GEOMETRÍA REAL · FD2pA + FD2pB</div>
+              <div style="position: absolute; top: 16px; right: 18px; z-index: 2; pointer-events: none; display: flex; gap: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .12em; color: #4ADE80;">
+                <span style="border: 1px solid rgba(74,222,128,.34); padding: 4px 8px;">ARRASTRA · GIRA EL MODELO</span>
+              </div>
+            </div>
+            <div class="bwsrule" style="display: grid; grid-template-columns: 150px 1fr 128px; align-items: center; gap: 20px; border: 1px solid #22222a; border-top: 0; padding: 18px 22px;">
+              <div class="bwsfaint" style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .14em; color: #55555f;">ACOPLE</div>
+              <input type="range" class="bwsrange" min="0" max="100" onInput="{{ setEngage }}" aria-label="Acople de la unión">
+              <div style="text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #4ADE80;"><span id="bws-eng">100</span> %</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- ============ 2. CÓMO FUNCIONA ============ -->
+      <div class="bwsr bwsalt bwsrule" style="padding: 96px 56px; border-bottom: 1px solid #17171a;">
+        <div style="display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 48px;">
+          <div>
+            <div class="bwsfaint" style="font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; letter-spacing: .14em; color: #7d7d86;">02 — MECÁNICA DE LA UNIÓN</div>
+            <h3 style="margin: 16px 0 0; font-size: 44px; font-weight: 600; letter-spacing: -.03em;">Cómo funciona</h3>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 440px; gap: 56px; align-items: start;">
+          <div>
+            <div class="bwshatch" style="position: relative; aspect-ratio: 16/9; border: 1px dashed #3a3a42; background: repeating-linear-gradient(135deg, #0b0b0e 0 8px, #101015 8px 16px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;">
+              <div style="display: flex; align-items: center; justify-content: center; width: 76px; height: 76px; border: 1px solid #4ADE80; border-radius: 50%;">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="#4ADE80"><path d="M8 5v14l11-7z"></path></svg>
+              </div>
+              <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; letter-spacing: .16em; color: #4ADE80;">VÍDEO · PENDIENTE DE RODAJE</div>
+              <div class="bwsfaint" style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .1em; color: #55555f; text-align: center; line-height: 1.7; max-width: 400px;">MONTAJE COMPLETO DE UNA RUINA<br>SUELO + PAREDES · PLANO CENITAL Y DETALLE DE UNIÓN<br>16:9 · SIN AUDIO · BUCLE</div>
+              <div style="position: absolute; left: 18px; bottom: 16px; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .12em; color: #55555f;">[DURACIÓN XX s]</div>
+            </div>
+            <div class="bwsrule" style="display: flex; align-items: center; justify-content: space-between; gap: 20px; border: 1px solid #22222a; border-top: 0; padding: 16px 22px; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .12em; color: #55555f;">
+              <span>DEMOSTRACIÓN DE MONTAJE</span>
+              <span style="color: #4ADE80;">SUELO → MUROS → ESQUINAS</span>
+            </div>
+          </div>
+
+          <div style="display: flex; flex-direction: column;">
+            <div class="bwsrule" style="padding: 0 0 26px; border-bottom: 1px solid #22222a;">
+              <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .14em; color: #4ADE80;">01 — COLA DE MILANO</div>
+              <div style="margin-top: 12px; font-size: 22px; font-weight: 500; letter-spacing: -.015em;">El perfil se cierra sobre sí mismo</div>
+              <p class="bwsmuted" style="margin: 10px 0 0; font-size: 15px; line-height: 1.6; color: #a1a1aa;">El macho entra deslizando en vertical y queda bloqueado en el plano horizontal. No hay tornillo, imán ni cola: la geometría del perfil es lo que sujeta el ángulo.</p>
+            </div>
+            <div class="bwsrule" style="padding: 26px 0; border-bottom: 1px solid #22222a;">
+              <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .14em; color: #4ADE80;">02 — HEMBRA BILATERAL</div>
+              <div style="margin-top: 12px; font-size: 22px; font-weight: 500; letter-spacing: -.015em;">Cada muro acepta unión por los dos lados</div>
+              <p class="bwsmuted" style="margin: 10px 0 0; font-size: 15px; line-height: 1.6; color: #a1a1aa;">Las esquinas no están atadas a una posición del layout. No hay pieza «correcta» que buscar entre el set: cualquier muro encaja con cualquier otro por cualquiera de sus dos extremos.</p>
+            </div>
+            <div style="padding: 26px 0 0;">
+              <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .14em; color: #4ADE80;">03 — MONTAJE Y DESMONTAJE</div>
+              <div style="margin-top: 12px; font-size: 22px; font-weight: 500; letter-spacing: -.015em;">Sin pegamento y sin herramientas</div>
+              <p class="bwsmuted" style="margin: 10px 0 0; font-size: 15px; line-height: 1.6; color: #a1a1aa;">Se monta con las manos y se desmonta igual, sin marcar la pieza. El mismo muro puede cambiar de sitio entre partida y partida sin perder ajuste.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ 3. PROBLEMAS QUE RESUELVE ============ -->
+      <div class="bwsr bwsrule" style="padding: 96px 56px; border-bottom: 1px solid #17171a;">
+        <div style="display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 20px;">
+          <div>
+            <div class="bwsfaint" style="font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; letter-spacing: .14em; color: #7d7d86;">03 — PROBLEMAS QUE RESUELVE</div>
+            <h3 style="margin: 16px 0 0; font-size: 44px; font-weight: 600; letter-spacing: -.03em;">Frente a las tres alternativas</h3>
+          </div>
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; letter-spacing: .12em; color: #4ADE80; border: 1px solid rgba(74,222,128,.34); padding: 9px 12px;">CIFRAS PENDIENTES DE CERRAR</div>
+        </div>
+        <div class="bwsrule" style="border-top: 1px dashed #3a3a42; padding-top: 40px;">
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px;">
+            <div class="bwsvs" style="border: 1px solid #22222a; padding: 30px 28px 28px; display: flex; flex-direction: column;">
+              <div style="display: flex; align-items: baseline; justify-content: space-between;">
+                <span class="bwsvs-n" style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; letter-spacing: .14em; color: #7d7d86; transition: color .25s;">01</span>
+                <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .14em; color: #55555f;">FRENTE A</span>
+              </div>
+              <div style="margin-top: 14px; font-size: 13px; font-family: 'IBM Plex Mono', monospace; letter-spacing: .12em; color: #4ADE80;">BISAGRA</div>
+              <div style="margin-top: 14px; font-size: 26px; line-height: 1.15; font-weight: 500; letter-spacing: -.02em;">No pierde firmeza ni gana holgura con el uso</div>
+              <p class="bwsmuted" style="margin: 16px 0 0; font-size: 15px; line-height: 1.62; color: #a1a1aa;">La bisagra trabaja sobre un eje, y el eje se holga cada vez que se abre y se cierra. Al cabo de unas partidas el muro deja de caer a 90º y cae donde el desgaste le deja. La cola de milano no tiene pieza móvil: el ajuste es geométrico y se repone entero en cada montaje.</p>
+            </div>
+
+            <div class="bwsvs" style="border: 1px solid #22222a; padding: 30px 28px 28px; display: flex; flex-direction: column;">
+              <div style="display: flex; align-items: baseline; justify-content: space-between;">
+                <span class="bwsvs-n" style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; letter-spacing: .14em; color: #7d7d86; transition: color .25s;">02</span>
+                <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .14em; color: #55555f;">FRENTE A</span>
+              </div>
+              <div style="margin-top: 14px; font-size: 13px; font-family: 'IBM Plex Mono', monospace; letter-spacing: .12em; color: #4ADE80;">ESCENOGRAFÍA MDF</div>
+              <div style="margin-top: 14px; font-size: 26px; line-height: 1.15; font-weight: 500; letter-spacing: -.02em;">Menos piezas, montaje más rápido y no se rompe</div>
+              <p class="bwsmuted" style="margin: 16px 0 0; font-size: 15px; line-height: 1.62; color: #a1a1aa;">El MDF llega en plancha troquelada: separar, encolar, esperar el secado y confiar en que no se astille al transportarlo. Aquí la pieza sale impresa entera y no necesita cola. Una mesa completa son [XX] piezas frente a las [XXX] de un kit MDF equivalente.</p>
+            </div>
+
+            <div class="bwsvs" style="border: 1px solid #22222a; padding: 30px 28px 28px; display: flex; flex-direction: column;">
+              <div style="display: flex; align-items: baseline; justify-content: space-between;">
+                <span class="bwsvs-n" style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; letter-spacing: .14em; color: #7d7d86; transition: color .25s;">03</span>
+                <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .14em; color: #55555f;">FRENTE A</span>
+              </div>
+              <div style="margin-top: 14px; font-size: 13px; font-family: 'IBM Plex Mono', monospace; letter-spacing: .12em; color: #4ADE80;">ESCENOGRAFÍA NO DESMONTABLE</div>
+              <div style="margin-top: 14px; font-size: 26px; line-height: 1.15; font-weight: 500; letter-spacing: -.02em;">Ocupa poco al guardar y viaja plana</div>
+              <p class="bwsmuted" style="margin: 16px 0 0; font-size: 15px; line-height: 1.62; color: #a1a1aa;">Una ruina montada en bloque ocupa su volumen entero para siempre: en el armario, en el maletero y en la mesa del club. Desmontada en piezas planas, la misma mesa baja a [XX] litros y entra en una caja de transporte estándar.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- ============ 4. CODIFICACIÓN ALFANUMÉRICA ============ -->
+      <div class="bwsr bwsalt bwsrule" style="padding: 96px 56px; border-bottom: 1px solid #17171a;">
+        <div style="display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 48px;">
+          <div>
+            <div class="bwsfaint" style="font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; letter-spacing: .14em; color: #7d7d86;">04 — IDENTIFICACIÓN DE PIEZA</div>
+            <h3 style="margin: 16px 0 0; font-size: 44px; font-weight: 600; letter-spacing: -.03em;">Codificación en la base</h3>
+          </div>
+          <div class="bwsfaint" style="max-width: 400px; font-size: 14px; line-height: 1.6; color: #a1a1aa; text-align: right;">Solo en las ruinas en L. Nomenclatura oficial de layouts de Games Workshop.</div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 620px 1fr; gap: 56px; align-items: start;">
+          <div>
+            <div style="position: relative;">
+              <div class="bwsslide active" data-slide="0">
+                <div class="bwshatch" style="position: relative; aspect-ratio: 3/2; border: 1px dashed #3a3a42; background: repeating-linear-gradient(135deg, #0b0b0e 0 8px, #101015 8px 16px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;">
+                  <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#4ADE80" stroke-width="1.1" opacity=".7"><rect x="3" y="5" width="18" height="14"></rect><path d="M3 15l5-4 4 3 3-3 6 5"></path><circle cx="8.5" cy="9.5" r="1.4"></circle></svg>
+                  <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; letter-spacing: .16em; color: #4ADE80;">PENDIENTE</div>
+                  <div class="bwsfaint" style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .1em; color: #55555f; text-align: center; line-height: 1.6;">MACRO DE LA BASE DEL MURO · CÓDIGO EN BAJO RELIEVE<br>LUZ RASANTE PARA QUE SE LEA EL GRABADO</div>
+                </div>
+              </div>
+
+              <div class="bwsslide" data-slide="1">
+                <div id="bws-cmp" style="position: relative; aspect-ratio: 3/2; border: 1px solid #22222a; overflow: hidden; user-select: none;">
+                  <div class="bwshatch" style="position: absolute; inset: 0; border: 1px dashed #3a3a42; background: repeating-linear-gradient(135deg, #0b0b0e 0 10px, #14141a 10px 20px);">
+                    <div style="position: absolute; right: 0; bottom: 20%; width: 50%; display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 0 18px; box-sizing: border-box;">
+                      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; letter-spacing: .16em; color: #4ADE80;">PENDIENTE</div>
+                      <div class="bwsfaint" style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .1em; color: #55555f; text-align: center; line-height: 1.6;">MISMO LAYOUT MONTADO CON NUESTRAS PIEZAS<br>VISTA CENITAL · MISMO ENCUADRE Y ESCALA</div>
+                    </div>
+                  </div>
+                  <div id="bws-cmp-top" class="bwshatch" style="position: absolute; inset: 0; clip-path: inset(0 50% 0 0); border: 1px dashed #3a3a42; background: repeating-linear-gradient(90deg, #08080a 0 3px, #191920 3px 24px);">
+                    <div style="position: absolute; left: 0; bottom: 20%; width: 50%; display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 0 18px; box-sizing: border-box;">
+                      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; letter-spacing: .16em; color: #4ADE80;">PENDIENTE</div>
+                      <div class="bwsfaint" style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .1em; color: #55555f; text-align: center; line-height: 1.6;">PLANO DEL LAYOUT OFICIAL DE GW<br>CON LOS CÓDIGOS SOBRE EL PLANO</div>
+                    </div>
+                  </div>
+                  <div id="bws-cmp-bar" style="position: absolute; top: 0; bottom: 0; left: 50%; width: 1px; background: #4ADE80; pointer-events: none;">
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; align-items: center; justify-content: center; gap: 6px; width: 46px; height: 46px; border: 1px solid #4ADE80; border-radius: 50%; background: rgba(10,10,11,.86); font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #4ADE80;">↔</div>
+                  </div>
+                  <div style="position: absolute; top: 14px; left: 16px; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .12em; color: #55555f;">PLANO GW</div>
+                  <div style="position: absolute; top: 14px; right: 16px; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .12em; color: #4ADE80;">MONTADO CON BWS</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bwsrule" style="display: flex; align-items: center; justify-content: space-between; gap: 20px; border: 1px solid #22222a; border-top: 0; padding: 16px 22px;">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <button type="button" class="bwsdot active" data-i="0" onClick="{{ goSlide }}" aria-label="Detalle del grabado"></button>
+                <button type="button" class="bwsdot" data-i="1" onClick="{{ goSlide }}" aria-label="Plano GW vs montaje"></button>
+                <span id="bws-cap" class="bwsfaint" style="margin-left: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .12em; color: #55555f;">01 · DETALLE DEL GRABADO</span>
+              </div>
+              <div style="display: flex; gap: 10px;">
+                <button type="button" class="bwslbnav" onClick="{{ prevSlide }}" style="width: 36px; height: 36px; border: 1px solid #33333a; background: transparent; color: #ededf0; font-family: 'IBM Plex Mono', monospace; font-size: 14px; cursor: pointer;">←</button>
+                <button type="button" class="bwslbnav" onClick="{{ nextSlide }}" style="width: 36px; height: 36px; border: 1px solid #33333a; background: transparent; color: #ededf0; font-family: 'IBM Plex Mono', monospace; font-size: 14px; cursor: pointer;">→</button>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div style="font-size: 26px; line-height: 1.3; font-weight: 500; letter-spacing: -.02em; max-width: 460px;">Cada ruina en L lleva su código grabado en la cara inferior.</div>
+            <p class="bwsmuted" style="margin: 18px 0 0; max-width: 460px; font-size: 15px; line-height: 1.62; color: #a1a1aa;">El código corresponde a la nomenclatura de los layouts oficiales de Games Workshop. Al montar, se lee el plano, se busca la letra y la pieza va donde tiene que ir — sin comparar siluetas ni medir distancias sobre la mesa.</p>
+            <p class="bwsmuted" style="margin: 14px 0 0; max-width: 460px; font-size: 15px; line-height: 1.62; color: #a1a1aa;">Va en bajo relieve, no impreso: no se borra al manipular la pieza ni al pintarla.</p>
+
+            <div style="display: flex; align-items: center; gap: 20px; margin-top: 36px;">
+              <div style="display: flex; align-items: center; justify-content: center; width: 74px; height: 74px; border: 1px solid #4ADE80; border-radius: 50%; font-family: 'IBM Plex Mono', monospace; font-size: 24px; font-weight: 500; letter-spacing: .08em; color: #4ADE80;">AB</div>
+              <div style="display: flex; align-items: center; justify-content: center; width: 74px; height: 74px; border: 1px solid #4ADE80; border-radius: 50%; font-family: 'IBM Plex Mono', monospace; font-size: 24px; font-weight: 500; letter-spacing: .08em; color: #4ADE80;">CD</div>
+              <div style="display: flex; align-items: center; justify-content: center; width: 74px; height: 74px; border: 1px solid #4ADE80; border-radius: 50%; font-family: 'IBM Plex Mono', monospace; font-size: 24px; font-weight: 500; letter-spacing: .08em; color: #4ADE80;">EF</div>
+              <div style="display: flex; align-items: center; justify-content: center; width: 74px; height: 74px; border: 1px solid #4ADE80; border-radius: 50%; font-family: 'IBM Plex Mono', monospace; font-size: 24px; font-weight: 500; letter-spacing: .08em; color: #4ADE80;">GH</div>
+            </div>
+            <div class="bwsfaint" style="margin-top: 14px; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .12em; color: #55555f;">MISMO CÍRCULO QUE EN LOS ESQUEMAS DE LAYOUT DE GW</div>
+            <div style="margin-top: 20px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .12em; color: #4ADE80;">LISTADO COMPLETO DE CÓDIGOS PENDIENTE DE CERRAR</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ 5. FICHA TÉCNICA ============ -->
+      <div class="bwsr bwsrule bwsstl" style="display: flex; align-items: center; justify-content: space-between; gap: 48px; padding: 52px 56px; border: 0; border-top: 1px solid #17171a; border-bottom: 1px solid #17171a;">
+        <div style="display: flex; align-items: center; gap: 28px;">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#4ADE80" stroke-width="1.2"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path><path d="M14 3v5h5M12 12v5M9.5 14.5L12 17l2.5-2.5"></path></svg>
+          <div>
+            <div style="font-size: 26px; font-weight: 500; letter-spacing: -.02em;">Ficha técnica del Slider System</div>
+            <div class="bwsmuted" style="margin-top: 8px; font-size: 15px; line-height: 1.55; color: #a1a1aa;">Cotas de la unión, tolerancias, material y condiciones de impresión. El mismo documento que acompaña a los packs y a los STL.</div>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 22px;">
+          <span class="bwsfaint" style="flex: none; white-space: nowrap; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .12em; color: #55555f;">PDF · [XX] PÁG · [X,X MB]</span>
+          <a href="#6a" class="bwsbtn-p bwsstl-cta" style="white-space: nowrap;">Descargar ficha técnica</a>
+        </div>
+      </div>
+
+      <!-- ============ 6. CTA A PRODUCTO ============ -->
+      <div class="bwsr" style="padding: 104px 56px 112px; text-align: center;">
+        <div class="bwsfaint" style="font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; letter-spacing: .14em; color: #7d7d86;">06 — SIGUIENTE PASO</div>
+        <div style="margin: 22px auto 0; max-width: 900px; font-size: 56px; line-height: 1.05; font-weight: 600; letter-spacing: -.035em;">El sistema se entiende montándolo</div>
+        <p class="bwsmuted" style="margin: 22px auto 0; max-width: 560px; font-size: 17px; line-height: 1.6; color: #a1a1aa;">Tournament es la mesa completa con la unión Slider System en todas sus piezas. El resto de packs la comparten.</p>
+        <div style="display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 40px;">
+          <a href="#6a" class="bwsbtn-p bwsbtn-solid" style="background: #4ADE80; border-color: #4ADE80; color: #06120c; font-weight: 600;">Ver el pack Tournament</a>
+          <a href="#6a" class="bwsbtn-s">Ver los 5 packs</a>
+        </div>
+      </div>
+
+      <!-- FOOTER -->
+      <div class="bwsdark" style="position: relative; padding: 88px 56px 40px; background: #08080a; overflow: hidden;">
+        <div style="display: grid; grid-template-columns: 1fr 200px 200px; gap: 48px; padding-bottom: 64px; border-bottom: 1px solid #1c1c22;">
+          <div>
+            <div style="font-size: 58px; line-height: 1.05; font-weight: 600; letter-spacing: -.035em; max-width: 620px;">Hecho por jugadores<br>para jugadores.</div>
+            <div style="margin-top: 26px; font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; letter-spacing: .14em; color: #4ADE80;">SLIDER SYSTEM™ · ESCENOGRAFÍA MODULAR 3D</div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 14px; font-size: 14px; color: #a1a1aa;">
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .14em; color: #55555f; margin-bottom: 4px;">TIENDA</div>
+            <a href="#6a" class="bwsnav">Packs</a><a href="#6a" class="bwsnav">Archivos STL</a><a href="#6a" class="bwsnav">Slider System</a><a href="#6a" class="bwsnav">FAQ</a>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 14px; font-size: 14px; color: #a1a1aa;">
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .14em; color: #55555f; margin-bottom: 4px;">ESTUDIO</div>
+            <a href="#6a" class="bwsnav">Sobre nosotros</a><a href="#6a" class="bwsnav">Contacto</a><a href="#6a" class="bwsnav">Instagram</a><a href="#6a" class="bwsnav">Blog</a>
+          </div>
+        </div>
+        <div style="position: absolute; right: 32px; bottom: 96px; display: flex; align-items: center; gap: 12px; background: rgba(14,14,17,.94); border: 1px solid #2c2c33; padding: 11px 14px;">
+          <span style="width: 7px; height: 7px; border-radius: 50%; background: #4ADE80; animation: blink 2.4s infinite;"></span>
+          <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; letter-spacing: .1em; color: #ededf0;">TANDA 01</span>
+          <span style="display: flex; gap: 5px;"><span style="width: 9px; height: 9px; border-radius: 50%; background: #4ADE80;"></span><span style="width: 9px; height: 9px; border-radius: 50%; border: 1px solid #4ADE80;"></span></span>
+          <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7d7d86;">+</span>
+        </div>
+        <img src="logos/bws-full-light.svg" alt="Brutal Work Studio" style="display: block; width: 100%; margin: 56px 0 40px; opacity: .16;">
+        <div style="display: flex; justify-content: space-between; align-items: center; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .08em; color: #55555f;">
+          <span>© 2026 BRUTAL WORK STUDIO</span>
+          <div style="display: flex; gap: 22px;">
+            <a href="#6a" class="bwsnav">Aviso legal</a><a href="#6a" class="bwsnav">Privacidad</a><a href="#6a" class="bwsnav">Cookies</a><a href="#6a" class="bwsnav">Términos y condiciones</a><a href="#6a" class="bwsnav">Envíos y devoluciones</a><a href="#6a" class="bwsnav">Contacto</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- módulo flotante de slots (idéntico a Inicio · fixed en producción) -->
+      <div style="position: absolute; right: 32px; top: 856px; z-index: 30; width: 372px; background: rgba(14,14,17,.94); border: 1px solid #2c2c33; backdrop-filter: blur(10px); box-shadow: 0 24px 60px rgba(0,0,0,.55);">
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border-bottom: 1px solid #22222a;">
+          <div style="display: flex; align-items: center; gap: 9px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .14em; color: #a1a1aa;"><span style="width: 6px; height: 6px; border-radius: 50%; background: #4ADE80; animation: blink 2.4s infinite;"></span>FABRICACIÓN EN VIVO</div>
+          <span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #7d7d86;">—</span>
+        </div>
+        <div style="padding: 6px 0;">
+          <div style="display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-bottom: 1px solid #1a1a20;">
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: .06em; width: 74px; color: #ededf0;">TANDA 01</span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .1em; color: #4ADE80; flex: 1;">PRÓXIMA ENTREGA</span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: #a1a1aa;">1 libre</span>
+            <span style="display: flex; gap: 5px;"><span style="width: 9px; height: 9px; border-radius: 50%; background: #4ADE80;"></span><span style="width: 9px; height: 9px; border-radius: 50%; border: 1px solid #4ADE80;"></span></span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-bottom: 1px solid #1a1a20;">
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: .06em; width: 74px; color: #a1a1aa;">TANDA 02</span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .1em; color: #7d7d86; flex: 1;">LISTA DE ESPERA</span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: #7d7d86;">2 libres</span>
+            <span style="display: flex; gap: 5px;"><span style="width: 9px; height: 9px; border-radius: 50%; border: 1px solid #4a4a55;"></span><span style="width: 9px; height: 9px; border-radius: 50%; border: 1px solid #4a4a55;"></span></span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-bottom: 1px solid #1a1a20;">
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: .06em; width: 74px; color: #a1a1aa;">TANDA 03</span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .1em; color: #7d7d86; flex: 1;">LISTA DE ESPERA</span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: #7d7d86;">2 libres</span>
+            <span style="display: flex; gap: 5px;"><span style="width: 9px; height: 9px; border-radius: 50%; border: 1px solid #4a4a55;"></span><span style="width: 9px; height: 9px; border-radius: 50%; border: 1px solid #4a4a55;"></span></span>
+          </div>
+        </div>
+        <a href="#6a" class="bwsbtn-p bwsbtn-solid" style="display: flex; width: 100%; height: 48px; padding: 0; font-size: 14px; background: #4ADE80; border-color: #4ADE80; color: #06120c; font-weight: 600;">Reservar slot · Tanda 01</a>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: 14px; margin: 72px 0 24px;">
+    <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: #7c766c;">Variantes de bloque</span>
+    <div style="flex: 1; height: 1px; background: #cfcbc3;"></div>
+    <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7c766c;">alternativas a los bloques de <a href="#6a" style="color: #17A354;">6a</a></span>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 56px;">
+
+    <div id="6b" style="display: flex; flex-direction: column; gap: 20px;">
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: .1em; background: #1b1a18; color: #f4f2ee; padding: 5px 9px;">6b</span>
+        <span style="font-size: 15px; font-weight: 600; color: #1b1a18;">Hero · diagrama técnico en vez de 3D</span>
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7c766c;">esquema plano en vez de geometría real · misma retícula</span>
+      </div>
+      <div style="width: 1440px; background: #0a0a0b; color: #ededf0; border: 1px solid #26262a; padding: 64px 56px;">
+        <div style="display: grid; grid-template-columns: 1fr 700px; gap: 56px; align-items: center; font-family: 'Archivo', system-ui, sans-serif;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 10px; font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; letter-spacing: .16em; color: #7d7d86;">
+              <span style="width: 6px; height: 6px; background: #4ADE80; border-radius: 50%;"></span>UNIÓN MECÁNICA · COLA DE MILANO
+            </div>
+            <div style="margin: 30px 0 0; font-size: 88px; line-height: .92; font-weight: 600; letter-spacing: -.04em;">Slider<br>System™</div>
+            <p style="margin: 26px 0 0; max-width: 460px; font-size: 18px; line-height: 1.55; color: #a1a1aa;">Una unión en cola de milano que monta y desmonta a mano, sin pegamento ni bisagras, y mantiene los 90º durante toda la partida.</p>
+            <div style="margin-top: 30px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .12em; color: #4ADE80; border: 1px solid rgba(74,222,128,.34); padding: 9px 12px; display: inline-block;">HUECO DE VÍDEO DE MONTAJE · PENDIENTE DE RODAJE</div>
+          </div>
+          <div style="border: 1px solid #22222a; background: #0d0d10; padding: 30px 34px;">
+            <svg viewBox="0 0 640 330" style="width: 100%; display: block;" fill="none">
+              <rect x="40" y="60" width="240" height="200" stroke="#8f8f99" stroke-width="1.6"></rect>
+              <rect x="280" y="60" width="34" height="200" stroke="#4ADE80" stroke-width="1.6"></rect>
+              <rect x="360" y="60" width="240" height="200" stroke="#8f8f99" stroke-width="1.6"></rect>
+              <rect x="360" y="60" width="34" height="200" stroke="#4ADE80" stroke-width="1.4" stroke-dasharray="5 4"></rect>
+              <path d="M337 96 v120 M329 208 l8 10 l8 -10" stroke="#4ADE80" stroke-width="1.4"></path>
+              <text x="337" y="86" fill="#4ADE80" font-family="IBM Plex Mono, monospace" font-size="12" text-anchor="middle">DESLIZA</text>
+              <text x="160" y="288" fill="#8f8f99" font-family="IBM Plex Mono, monospace" font-size="12" text-anchor="middle">ALZADO · MURO A + MACHO</text>
+              <text x="480" y="288" fill="#8f8f99" font-family="IBM Plex Mono, monospace" font-size="12" text-anchor="middle">ALZADO · MURO B + HEMBRA</text>
+              <g transform="translate(232,300)">
+                <path d="M0 0 L44 0 L44 8 L60 2 L60 22 L44 16 L44 24 L0 24 Z" stroke="#4ADE80" stroke-width="1.3"></path>
+                <text x="86" y="16" fill="#55555f" font-family="IBM Plex Mono, monospace" font-size="11">SECCIÓN A-A · PERFIL DEL DOVETAIL</text>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="6c" style="display: flex; flex-direction: column; gap: 20px;">
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: .1em; background: #1b1a18; color: #f4f2ee; padding: 5px 9px;">6c</span>
+        <span style="font-size: 15px; font-weight: 600; color: #1b1a18;">Comparación · tabla en vez de tres bloques</span>
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7c766c;">más denso, lectura por criterio</span>
+      </div>
+      <div style="width: 1440px; background: #0a0a0b; color: #ededf0; border: 1px solid #26262a; padding: 64px 56px; font-family: 'Archivo', system-ui, sans-serif;">
+        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; letter-spacing: .14em; color: #7d7d86;">03 — PROBLEMAS QUE RESUELVE</div>
+        <h3 style="margin: 16px 0 40px; font-size: 44px; font-weight: 600; letter-spacing: -.03em;">Frente a las tres alternativas</h3>
+        <div style="display: grid; grid-template-columns: 220px repeat(4, 1fr); gap: 1px; background: #22222a; border: 1px solid #22222a;">
+          <div style="background: #0a0a0b; padding: 18px 20px;"></div>
+          <div style="background: #0d1410; padding: 18px 20px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: .12em; color: #4ADE80;">SLIDER SYSTEM</div>
+          <div style="background: #0a0a0b; padding: 18px 20px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: .12em; color: #a1a1aa;">BISAGRA</div>
+          <div style="background: #0a0a0b; padding: 18px 20px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: .12em; color: #a1a1aa;">MDF</div>
+          <div style="background: #0a0a0b; padding: 18px 20px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: .12em; color: #a1a1aa;">NO DESMONTABLE</div>
+
+          <div style="background: #0a0a0b; padding: 20px; font-size: 14px; color: #a1a1aa;">Firmeza tras uso repetido</div>
+          <div style="background: #0d1410; padding: 20px; font-size: 15px;">Constante · sin pieza móvil</div>
+          <div style="background: #0a0a0b; padding: 20px; font-size: 15px; color: #a1a1aa;">El eje se holga</div>
+          <div style="background: #0a0a0b; padding: 20px; font-size: 15px; color: #a1a1aa;">Depende del encolado</div>
+          <div style="background: #0a0a0b; padding: 20px; font-size: 15px; color: #a1a1aa;">Constante</div>
+
+          <div style="background: #0a0a0b; padding: 20px; font-size: 14px; color: #a1a1aa;">Piezas por mesa</div>
+          <div style="background: #0d1410; padding: 20px; font-family: 'IBM Plex Mono', monospace; font-size: 15px; color: #4ADE80;">[XX]</div>
+          <div style="background: #0a0a0b; padding: 20px; font-family: 'IBM Plex Mono', monospace; font-size: 15px; color: #a1a1aa;">[XX]</div>
+          <div style="background: #0a0a0b; padding: 20px; font-family: 'IBM Plex Mono', monospace; font-size: 15px; color: #a1a1aa;">[XXX]</div>
+          <div style="background: #0a0a0b; padding: 20px; font-family: 'IBM Plex Mono', monospace; font-size: 15px; color: #a1a1aa;">[XX]</div>
+
+          <div style="background: #0a0a0b; padding: 20px; font-size: 14px; color: #a1a1aa;">Montaje</div>
+          <div style="background: #0d1410; padding: 20px; font-size: 15px;">A mano · sin cola</div>
+          <div style="background: #0a0a0b; padding: 20px; font-size: 15px; color: #a1a1aa;">A mano</div>
+          <div style="background: #0a0a0b; padding: 20px; font-size: 15px; color: #a1a1aa;">Troquel + cola + secado</div>
+          <div style="background: #0a0a0b; padding: 20px; font-size: 15px; color: #a1a1aa;">Viene montada</div>
+
+          <div style="background: #0a0a0b; padding: 20px; font-size: 14px; color: #a1a1aa;">Volumen guardada</div>
+          <div style="background: #0d1410; padding: 20px; font-family: 'IBM Plex Mono', monospace; font-size: 15px; color: #4ADE80;">[XX] L</div>
+          <div style="background: #0a0a0b; padding: 20px; font-family: 'IBM Plex Mono', monospace; font-size: 15px; color: #a1a1aa;">[XX] L</div>
+          <div style="background: #0a0a0b; padding: 20px; font-family: 'IBM Plex Mono', monospace; font-size: 15px; color: #a1a1aa;">[XX] L</div>
+          <div style="background: #0a0a0b; padding: 20px; font-family: 'IBM Plex Mono', monospace; font-size: 15px; color: #a1a1aa;">[XXX] L</div>
+
+          <div style="background: #0a0a0b; padding: 20px; font-size: 14px; color: #a1a1aa;">Rotura en transporte</div>
+          <div style="background: #0d1410; padding: 20px; font-size: 15px;">Pieza maciza impresa</div>
+          <div style="background: #0a0a0b; padding: 20px; font-size: 15px; color: #a1a1aa;">Rotura por el eje</div>
+          <div style="background: #0a0a0b; padding: 20px; font-size: 15px; color: #a1a1aa;">Astillado de canto</div>
+          <div style="background: #0a0a0b; padding: 20px; font-size: 15px; color: #a1a1aa;">Golpes en volumen</div>
+        </div>
+        <div style="margin-top: 20px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .12em; color: #55555f;">CIFRAS PENDIENTES DE CERRAR · COMPARACIÓN POR CATEGORÍA, NO POR MARCA</div>
+      </div>
+    </div>
+
+    <div id="6d" style="display: flex; flex-direction: column; gap: 20px;">
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: .1em; background: #1b1a18; color: #f4f2ee; padding: 5px 9px;">6d</span>
+        <span style="font-size: 15px; font-weight: 600; color: #1b1a18;">Codificación · tabla código ↔ pieza ↔ posición</span>
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7c766c;">escala mejor cuando haya 20+ códigos</span>
+      </div>
+      <div style="width: 1440px; background: #0a0a0b; color: #ededf0; border: 1px solid #26262a; padding: 64px 56px; font-family: 'Archivo', system-ui, sans-serif;">
+        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; letter-spacing: .14em; color: #7d7d86;">04 — IDENTIFICACIÓN DE PIEZA</div>
+        <h3 style="margin: 16px 0 40px; font-size: 44px; font-weight: 600; letter-spacing: -.03em;">Codificación en la base</h3>
+        <div style="display: grid; grid-template-columns: 140px 1fr 1fr 200px; gap: 1px; background: #22222a; border: 1px solid #22222a;">
+          <div style="background: #0a0a0b; padding: 16px 20px; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .14em; color: #55555f;">CÓDIGO</div>
+          <div style="background: #0a0a0b; padding: 16px 20px; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .14em; color: #55555f;">PIEZA</div>
+          <div style="background: #0a0a0b; padding: 16px 20px; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .14em; color: #55555f;">POSICIÓN EN LAYOUT GW</div>
+          <div style="background: #0a0a0b; padding: 16px 20px; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .14em; color: #55555f;">UNIDADES</div>
+          <div style="background: #0a0a0b; padding: 18px 20px; font-family: 'IBM Plex Mono', monospace; font-size: 20px; color: #4ADE80;">AB</div>
+          <div style="background: #0a0a0b; padding: 18px 20px; font-size: 15px;">Ruina en L</div>
+          <div style="background: #0a0a0b; padding: 18px 20px; font-size: 15px; color: #a1a1aa;">[POSICIÓN]</div>
+          <div style="background: #0a0a0b; padding: 18px 20px; font-family: 'IBM Plex Mono', monospace; font-size: 15px; color: #a1a1aa;">[X] ud</div>
+          <div style="background: #0a0a0b; padding: 18px 20px; font-family: 'IBM Plex Mono', monospace; font-size: 20px; color: #4ADE80;">CD</div>
+          <div style="background: #0a0a0b; padding: 18px 20px; font-size: 15px;">Ruina en L</div>
+          <div style="background: #0a0a0b; padding: 18px 20px; font-size: 15px; color: #a1a1aa;">[POSICIÓN]</div>
+          <div style="background: #0a0a0b; padding: 18px 20px; font-family: 'IBM Plex Mono', monospace; font-size: 15px; color: #a1a1aa;">[X] ud</div>
+          <div style="background: #0a0a0b; padding: 18px 20px; font-family: 'IBM Plex Mono', monospace; font-size: 20px; color: #4ADE80;">EF</div>
+          <div style="background: #0a0a0b; padding: 18px 20px; font-size: 15px;">Ruina en L</div>
+          <div style="background: #0a0a0b; padding: 18px 20px; font-size: 15px; color: #a1a1aa;">[POSICIÓN]</div>
+          <div style="background: #0a0a0b; padding: 18px 20px; font-family: 'IBM Plex Mono', monospace; font-size: 15px; color: #a1a1aa;">[X] ud</div>
+          <div style="background: #0a0a0b; padding: 18px 20px; font-family: 'IBM Plex Mono', monospace; font-size: 20px; color: #4ADE80;">GH</div>
+          <div style="background: #0a0a0b; padding: 18px 20px; font-size: 15px;">Ruina en L</div>
+          <div style="background: #0a0a0b; padding: 18px 20px; font-size: 15px; color: #a1a1aa;">[POSICIÓN]</div>
+          <div style="background: #0a0a0b; padding: 18px 20px; font-family: 'IBM Plex Mono', monospace; font-size: 15px; color: #a1a1aa;">[X] ud</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="6e" style="display: flex; flex-direction: column; gap: 20px;">
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: .1em; background: #1b1a18; color: #f4f2ee; padding: 5px 9px;">6e</span>
+        <span style="font-size: 15px; font-weight: 600; color: #1b1a18;">Ficha técnica · tarjeta con índice en vez de franja</span>
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7c766c;">más peso visual, dice qué hay dentro</span>
+      </div>
+      <div style="width: 1440px; background: #0a0a0b; color: #ededf0; border: 1px solid #26262a; padding: 64px 56px; font-family: 'Archivo', system-ui, sans-serif;">
+        <div style="display: grid; grid-template-columns: 300px 1fr 260px; gap: 40px; align-items: center; border: 1px solid #22222a; padding: 36px 40px;">
+          <div style="aspect-ratio: 3/4; border: 1px dashed #3a3a42; background: repeating-linear-gradient(135deg, #0b0b0e 0 8px, #101015 8px 16px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;">
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .16em; color: #4ADE80;">PORTADA PDF</div>
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .1em; color: #55555f;">PENDIENTE</div>
+          </div>
+          <div>
+            <div style="font-size: 30px; font-weight: 500; letter-spacing: -.02em;">Ficha técnica del Slider System</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px 32px; margin-top: 24px;">
+              <div style="display: flex; gap: 12px; font-size: 14px; color: #a1a1aa;"><span style="font-family: 'IBM Plex Mono', monospace; color: #4ADE80;">01</span>Cotas de la unión y tolerancias</div>
+              <div style="display: flex; gap: 12px; font-size: 14px; color: #a1a1aa;"><span style="font-family: 'IBM Plex Mono', monospace; color: #4ADE80;">02</span>Material y altura de capa</div>
+              <div style="display: flex; gap: 12px; font-size: 14px; color: #a1a1aa;"><span style="font-family: 'IBM Plex Mono', monospace; color: #4ADE80;">03</span>Tabla de códigos alfanuméricos</div>
+              <div style="display: flex; gap: 12px; font-size: 14px; color: #a1a1aa;"><span style="font-family: 'IBM Plex Mono', monospace; color: #4ADE80;">04</span>Condiciones de impresión de STL</div>
+            </div>
+            <div style="margin-top: 26px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .12em; color: #55555f;">PDF · [XX] PÁG · [X,X MB] · REV. [XX]</div>
+          </div>
+          <a href="#6e" class="bwsbtn-p bwsbtn-solid" style="width: 100%; background: #4ADE80; border-color: #4ADE80; color: #06120c; font-weight: 600;">Descargar</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1600},&quot;tema&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;dark&quot;,&quot;light&quot;],&quot;default&quot;:&quot;dark&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Apariencia&quot;},&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#4ADE80&quot;,&quot;options&quot;:[&quot;#4ADE80&quot;,&quot;#D6FF3F&quot;,&quot;#FF5A1F&quot;,&quot;#7DD3FC&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Apariencia&quot;}}">
+class Component extends DCLogic {
+  componentDidMount() {
+    this.applyTheme(this.props.tema || "dark");
+    this.mateStage("bws-mate", 8.5);
+    this.compare();
+    const rng = document.querySelector(".bwsrange");
+    if (rng) rng.value = "100";
+    const root = document.getElementById("bws-root");
+    if (root) {
+      this._io = new IntersectionObserver((es) => {
+        es.forEach((en) => { if (en.isIntersecting) en.target.classList.add("in"); });
+      }, { threshold: .12 });
+      root.querySelectorAll(".bwsr").forEach((el) => { el.classList.add("armed"); this._io.observe(el); });
+      this._safety = setTimeout(() => {
+        if (!root.querySelector(".bwsr.in")) root.querySelectorAll(".bwsr").forEach((el) => {
+          el.style.transition = "none"; el.classList.remove("armed");
+          el.style.opacity = "1"; el.style.transform = "none";
+        });
+      }, 700);
+    }
+  }
+  componentDidUpdate(prev) {
+    if (prev.tema !== this.props.tema) this.applyTheme(this.props.tema || "dark");
+  }
+  componentWillUnmount() {
+    clearTimeout(this._safety);
+    this._io && this._io.disconnect();
+    const s = this._stage;
+    if (s) { cancelAnimationFrame(s.raf); if (s.cleanup) s.cleanup(); }
+  }
+
+  // hero: las dos piezas reales (FD2pA + FD2pB) acoplando en vertical a 90º.
+  // Mismo tratamiento que el hero de Inicio: wireframe de aristas de carácter
+  // sobre canvas 2D, paralaje suave con el ratón y bucle de acople.
+  mateStage(canvasId, scale) {
+    try {
+      const cv = document.getElementById(canvasId);
+      if (!cv) return;
+      const reg = (window.__bwsStages = window.__bwsStages || {});
+      const prev = reg[canvasId];
+      if (prev) { cancelAnimationFrame(prev.raf); if (prev.cleanup) prev.cleanup(); }
+      const slot = reg[canvasId] = { raf: 0, cleanup: null, engage: 1 };
+      this._stage = slot;
+
+      if (!window.__bwsDove) {
+        const link = document.getElementById("bws-wire-src");
+        const res = (window.__resources && window.__resources.wire) || (link && link.getAttribute("href"));
+        const url = (res && res.indexOf("dovetail-mesh-hd.json") === -1)
+          ? res
+          : new URL(res || "dovetail-mesh-hd.json", document.baseURI).href;
+        window.__bwsDove = fetch(url).then((r) => {
+          if (!r.ok) throw new Error("HTTP " + r.status);
+          return r.json();
+        }).then((d) => {
+          // aristas de carácter: se derivan de la malla por ángulo diedro,
+          // igual criterio que el hero de Inicio (wireframe verde, sin relleno).
+          const prep = (m) => {
+            const nT = m.t.length / 3, em = new Map();
+            for (let f = 0; f < nT; f++) {
+              for (let e = 0; e < 3; e++) {
+                const a = m.t[f * 3 + e], b = m.t[f * 3 + (e + 1) % 3];
+                const k = a < b ? a + "_" + b : b + "_" + a;
+                const cur = em.get(k);
+                if (cur === undefined) em.set(k, [f, -1]); else if (cur[1] === -1) cur[1] = f;
+              }
+            }
+            const COS = Math.cos(30 * Math.PI / 180);
+            const E = [];
+            em.forEach((pair, k) => {
+              const f1 = pair[0], f2 = pair[1];
+              if (f2 === -1) return;
+              const d = m.n[f1 * 3] * m.n[f2 * 3] + m.n[f1 * 3 + 1] * m.n[f2 * 3 + 1] + m.n[f1 * 3 + 2] * m.n[f2 * 3 + 2];
+              if (d >= COS) return;
+              const p = k.split("_");
+              const a = +p[0], b = +p[1];
+              const L = Math.hypot(m.v[a * 3] - m.v[b * 3], m.v[a * 3 + 1] - m.v[b * 3 + 1], m.v[a * 3 + 2] - m.v[b * 3 + 2]);
+              if (L < 0.2) return;
+              E.push(a, b);
+            });
+            return {
+              v: Float32Array.from(m.v), e: Int32Array.from(E),
+              sx: new Float32Array(m.v.length / 3), sy: new Float32Array(m.v.length / 3)
+            };
+          };
+          return { A: prep(d.FD2pA_mm), B: prep(d.FD2pB_mm) };
+        }).catch((err) => { console.error("BWS: malla no disponible", err); window.__bwsDove = null; return null; });
+      }
+      let A = null, B = null;
+      Promise.resolve(window.__bwsDove).then((data) => {
+        A = data && data.A; B = data && data.B;
+        if (!A || !B) console.error("BWS: faltan FD2pA_mm/FD2pB_mm");
+      });
+
+      const ctx = cv.getContext("2d");
+      let W = cv.width, H = cv.height;
+      const fit = () => {
+        const r = cv.getBoundingClientRect();
+        if (!r.width || !r.height) return false;
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        const w = Math.round(r.width * dpr), h = Math.round(r.height * dpr);
+        if (cv.width === w && cv.height === h) return false;
+        cv.width = w; cv.height = h; W = w; H = h;
+        return true;
+      };
+      fit();
+      const ro = new ResizeObserver(() => { if (fit() && slot.render) slot.render(); });
+      ro.observe(cv);
+      // pose: hembra a lo largo de X con su extremo en el origen; macho girado
+      // -90º sobre Z y apoyado en la esquina, entra deslizando en vertical.
+      // pose leída de FD2.stl (ensamblaje real): la hembra queda tal cual y el
+      // macho gira -90º sobre Z y se traslada a la esquina.
+      const MACHO_RZ = -Math.PI / 2, MACHO_T = [5.08, 71.12, 0];
+      const CENTER = [25.4, -33, 28.5];
+      const RISE = 46;
+      let S = scale, cx = W * 0.5, cy = H * 0.507;
+      const gauge = () => { S = scale * (H / 1052); cx = W * 0.5; cy = H * 0.507; };
+      gauge();
+      const q = { detail: 1, last: 0, acc: 0, n: 0 };
+      if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) q.detail = 0.55;
+
+      const project = (p, yaw, tilt) => {
+        const x = p[0] - CENTER[0], y = p[1] - CENTER[1], z = p[2] - CENTER[2];
+        const xr = x * Math.cos(yaw) - y * Math.sin(yaw);
+        const yr = x * Math.sin(yaw) + y * Math.cos(yaw);
+        return [cx + xr * S, cy - (z * Math.cos(tilt) - yr * Math.sin(tilt)) * S];
+      };
+      // sólido con sombreado plano: proyección ortográfica, culling de caras
+      // traseras y orden por profundidad. Las DOS piezas se ordenan juntas, así
+      // la pestaña del macho queda oculta dentro de la hembra al encajar.
+      const LIGHT = (() => { const l = [-0.42, -0.62, 0.66]; const m = Math.hypot(l[0], l[1], l[2]); return [l[0] / m, l[1] / m, l[2] / m]; })();
+      const strokeEdges = (M, place, rz, tz, yaw, tilt, alpha) => {
+        const cy0 = Math.cos(yaw), sy0 = Math.sin(yaw), ct = Math.cos(tilt), stl = Math.sin(tilt);
+        const crz = Math.cos(rz), srz = Math.sin(rz);
+        const nV = M.v.length / 3;
+        for (let i = 0; i < nV; i++) {
+          let x = M.v[i * 3], y = M.v[i * 3 + 1], z = M.v[i * 3 + 2];
+          if (rz) { const nx = x * crz - y * srz, ny = x * srz + y * crz; x = nx; y = ny; }
+          x += place[0] - CENTER[0]; y += place[1] - CENTER[1]; z += place[2] + tz - CENTER[2];
+          const xr = x * cy0 - y * sy0, yr = x * sy0 + y * cy0;
+          M.sx[i] = cx + xr * S;
+          M.sy[i] = cy - (z * ct - yr * stl) * S;
+        }
+        ctx.beginPath();
+        for (let k = 0; k < M.e.length; k += 2) {
+          const a = M.e[k], b = M.e[k + 1];
+          ctx.moveTo(M.sx[a], M.sy[a]);
+          ctx.lineTo(M.sx[b], M.sy[b]);
+        }
+        const rootEl = cv.closest("#bws-root");
+        const light = rootEl && rootEl.dataset.theme === "light";
+        ctx.strokeStyle = light ? "rgba(28,38,32," + Math.min(1, alpha * 1.5) + ")" : "rgba(158,255,200," + alpha + ")";
+        ctx.lineWidth = 1.4;
+        ctx.stroke();
+      };
+      const xform = (M, place, rz, tz, yaw, tilt) => {
+        const cy0 = Math.cos(yaw), sy0 = Math.sin(yaw), ct = Math.cos(tilt), stl = Math.sin(tilt);
+        const crz = Math.cos(rz), srz = Math.sin(rz);
+        const nV = M.v.length / 3;
+        for (let i = 0; i < nV; i++) {
+          let x = M.v[i * 3], y = M.v[i * 3 + 1], z = M.v[i * 3 + 2];
+          if (rz) { const nx = x * crz - y * srz, ny = x * srz + y * crz; x = nx; y = ny; }
+          x += place[0] - CENTER[0]; y += place[1] - CENTER[1]; z += place[2] + tz - CENTER[2];
+          const xr = x * cy0 - y * sy0, yr = x * sy0 + y * cy0;
+          M.sx[i] = cx + xr * S;
+          M.sy[i] = cy - (z * ct - yr * stl) * S;
+          M.dz[i] = z * stl + yr * ct;
+        }
+        // normales rotadas al espacio de vista, cacheadas por cara
+        const N = M.n, nT = N.length / 3;
+        if (!M.vn || M.vn.length !== nT * 4) M.vn = new Float32Array(nT * 4);
+        for (let f = 0; f < nT; f++) {
+          let nx = N[f * 3], ny = N[f * 3 + 1], nz = N[f * 3 + 2];
+          if (rz) { const a = nx * crz - ny * srz, b = nx * srz + ny * crz; nx = a; ny = b; }
+          M.vn[f * 4] = nz * stl + (nx * sy0 + ny * cy0) * ct;
+          M.vn[f * 4 + 1] = nx; M.vn[f * 4 + 2] = ny; M.vn[f * 4 + 3] = nz;
+        }
+      };
+      const paintScene = (parts, minPx) => {
+        const refs = [];
+        const depth = [];
+        for (let p = 0; p < parts.length; p++) {
+          const M = parts[p], T = M.t, nT = T.length / 3;
+          for (let f = 0; f < nT; f++) {
+            if (M.vn[f * 4] <= 0.015) continue;
+            const i0 = T[f * 3], i1 = T[f * 3 + 1], i2 = T[f * 3 + 2];
+            if (minPx > 0) {
+              const ax = M.sx[i1] - M.sx[i0], ay = M.sy[i1] - M.sy[i0];
+              const bx = M.sx[i2] - M.sx[i0], by = M.sy[i2] - M.sy[i0];
+              if (Math.abs(ax * by - ay * bx) * 0.5 < minPx) continue;
+            }
+            refs.push(p * 4194304 + f);
+            depth.push((M.dz[i0] + M.dz[i1] + M.dz[i2]) / 3);
+          }
+        }
+        const order = refs.map((_, i) => i);
+        order.sort((a, b) => depth[a] - depth[b]);
+        const light = (cv.closest("#bws-root") || {}).dataset && cv.closest("#bws-root").dataset.theme === "light";
+        for (let k = 0; k < order.length; k++) {
+          const ref = refs[order[k]];
+          const M = parts[(ref / 4194304) | 0], f = ref % 4194304;
+          const lam = Math.max(0, M.vn[f * 4 + 1] * LIGHT[0] + M.vn[f * 4 + 2] * LIGHT[1] + M.vn[f * 4 + 3] * LIGHT[2]);
+          const sh = 0.22 + 0.78 * lam;
+          const i0 = M.t[f * 3], i1 = M.t[f * 3 + 1], i2 = M.t[f * 3 + 2];
+          ctx.beginPath();
+          ctx.moveTo(M.sx[i0], M.sy[i0]);
+          ctx.lineTo(M.sx[i1], M.sy[i1]);
+          ctx.lineTo(M.sx[i2], M.sy[i2]);
+          ctx.closePath();
+          const col = light
+            ? "rgb(" + Math.round(238 - 172 * (1 - sh)) + "," + Math.round(240 - 170 * (1 - sh)) + "," + Math.round(232 - 170 * (1 - sh)) + ")"
+            : "rgb(" + Math.round(20 + 96 * sh) + "," + Math.round(30 + 196 * sh) + "," + Math.round(24 + 116 * sh) + ")";
+          ctx.fillStyle = col; ctx.strokeStyle = col; ctx.lineWidth = 1.25;
+          ctx.fill(); ctx.stroke();
+        }
+      };
+
+      // el modelo está quieto y encajado; el usuario lo gira arrastrando
+      const st = { yaw: -0.72, tilt: 0.26 };
+      const drag = { on: false, x: 0, y: 0 };
+      cv.style.cursor = "grab";
+      cv.style.touchAction = "none";
+      const onDown = (e) => { drag.on = true; drag.x = e.clientX; drag.y = e.clientY; cv.setPointerCapture(e.pointerId); cv.style.cursor = "grabbing"; };
+      const onMove = (e) => {
+        if (!drag.on) return;
+        st.yaw += (e.clientX - drag.x) * 0.008;
+        st.tilt = Math.max(-1.45, Math.min(1.45, st.tilt + (e.clientY - drag.y) * 0.005));
+        drag.x = e.clientX; drag.y = e.clientY;
+        if (slot.render) slot.render();
+      };
+      const onUp = () => { if (!drag.on) return; drag.on = false; cv.style.cursor = "grab"; if (slot.render) slot.render(); };
+      cv.addEventListener("pointerdown", onDown);
+      window.addEventListener("pointermove", onMove);
+      window.addEventListener("pointerup", onUp);
+      window.addEventListener("pointercancel", onUp);
+      slot.cleanup = () => {
+        ro.disconnect();
+        cv.removeEventListener("pointerdown", onDown);
+        window.removeEventListener("pointermove", onMove);
+        window.removeEventListener("pointerup", onUp);
+        window.removeEventListener("pointercancel", onUp);
+      };
+
+      const draw = () => {
+        if (!A || !B) return;
+        gauge();
+        ctx.clearRect(0, 0, W, H);
+
+        const rise = (1 - slot.engage) * RISE;
+        const yaw = st.yaw, tilt = st.tilt;
+        strokeEdges(A, [0, 0, 0], 0, 0, yaw, tilt, 0.5);
+        strokeEdges(B, MACHO_T, MACHO_RZ, rise, yaw, tilt, 0.55);
+      };
+      const render = () => { try { draw(); } catch (err) { console.error("BWS hero draw:", err); } };
+      slot.render = render;
+      Promise.resolve(window.__bwsDove).then(render);
+      render();
+    } catch (err) {
+      console.error("BWS hero:", err);
+    }
+  }
+  applyTheme(t) {
+    const root = document.getElementById("bws-root");
+    if (!root) return;
+    root.style.transition = "none";
+    root.classList.add("bwsnotrans");
+    root.dataset.theme = t;
+    requestAnimationFrame(() => { root.style.transition = ""; root.classList.remove("bwsnotrans"); });
+    setTimeout(() => { const s = this._stage; if (s && s.render) s.render(); }, 0);
+  }
+  showSlide(i) {
+    const n = document.querySelectorAll(".bwsslide").length || 2;
+    this._sl = (i + n) % n;
+    document.querySelectorAll(".bwsslide").forEach((el) => el.classList.toggle("active", Number(el.dataset.slide) === this._sl));
+    document.querySelectorAll(".bwsdot").forEach((el) => el.classList.toggle("active", Number(el.dataset.i) === this._sl));
+    const cap = document.getElementById("bws-cap");
+    if (cap) cap.textContent = this._sl === 0 ? "01 · DETALLE DEL GRABADO" : "02 · PLANO GW / MONTADO · ARRASTRA PARA COMPARAR";
+  }
+
+  compare() {
+    const box = document.getElementById("bws-cmp");
+    if (!box || box.dataset.wired) return;
+    box.dataset.wired = "1";
+    const set = (clientX) => {
+      const r = box.getBoundingClientRect();
+      const p = Math.max(2, Math.min(98, ((clientX - r.left) / r.width) * 100));
+      const top = document.getElementById("bws-cmp-top");
+      const bar = document.getElementById("bws-cmp-bar");
+      if (top) top.style.clipPath = "inset(0 " + (100 - p) + "% 0 0)";
+      if (bar) bar.style.left = p + "%";
+    };
+    let on = false;
+    box.addEventListener("pointerdown", (e) => { on = true; box.setPointerCapture(e.pointerId); set(e.clientX); });
+    box.addEventListener("pointermove", (e) => { if (on) set(e.clientX); });
+    const up = () => { on = false; };
+    box.addEventListener("pointerup", up);
+    box.addEventListener("pointercancel", up);
+  }
+
+  renderVals() {
+    this._sl = this._sl || 0;
+    setTimeout(() => this.compare(), 0);
+    return {
+      goSlide: (e) => this.showSlide(Number(e.currentTarget.dataset.i) || 0),
+      prevSlide: () => this.showSlide((this._sl || 0) - 1),
+      nextSlide: () => this.showSlide((this._sl || 0) + 1),
+      toggleTheme: () => {
+        const root = document.getElementById("bws-root");
+        this.applyTheme(root && root.dataset.theme === "light" ? "dark" : "light");
+      },
+      setEngage: (e) => {
+        const v = Number(e.target.value);
+        const s = this._stage;
+        if (s) { s.engage = v / 100; if (s.render) s.render(); }
+        const out = document.getElementById("bws-eng");
+        if (out) out.textContent = String(v);
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>
