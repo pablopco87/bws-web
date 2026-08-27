@@ -11,11 +11,31 @@ Next.js (App Router) + TypeScript + Tailwind CSS v4, with shadcn/ui components b
 - `app/globals.css` — design tokens (color, type, radius, shadow) as CSS custom properties,
   mapped into Tailwind's `@theme`. This is the single source of truth for BWS tokens — extend
   it, don't hardcode new hex values in components.
-- `components/ui/` — hand-authored shadcn-style primitives (button, sheet, accordion,
-  navigation-menu, switch, collapsible, separator, badge). `ui.shadcn.com` is blocked by this
-  environment's network policy, so these were written by hand from the standard shadcn source
-  rather than pulled via `npx shadcn add` — that CLI will still fail here; keep authoring/editing
-  primitives directly.
+- `components/ui/` — real shadcn/ui primitives (button, sheet, accordion, navigation-menu,
+  switch, collapsible, separator, badge), installed via `npx shadcn add <name>` and built on the
+  consolidated `radix-ui` package. Most were re-customized on top of that canonical base with
+  BWS tokens/variants (see below) — running `npx shadcn add <name> --overwrite` again will blow
+  those away and needs re-merging by hand, not a blind overwrite:
+  - `button.tsx`, `badge.tsx`: custom `cva` variants replacing shadcn's defaults (`primary` /
+    `secondary` / `solid` / `link` on Button; `slot-full` / `slot-half` / `solid` on Badge — the
+    latter actively used by the mega-menu and mobile nav). shadcn's own variant names
+    (`default`/`destructive`/`outline`/…) don't exist here on purpose — this repo has no
+    `--color-primary`/`--color-destructive`/etc. tokens, only the BWS palette in `globals.css`.
+  - `sheet.tsx`: kept the `showClose`/`closeLabel` props (not shadcn's `showCloseButton`) — both
+    `mobile-nav.tsx` and `floating-slots-panel.tsx` render their own "CERRAR"/chevron close
+    affordance and pass `showClose={false}`.
+  - `accordion.tsx`: kept `border-b border-border-hairline` on `AccordionItem` (shadcn's default
+    adds `last:border-b-0`, which would strip the divider under "Packs" in `mobile-nav.tsx` since
+    it's the only/last item in that accordion) and `bg-surface-alt` on `AccordionContent`.
+  - `switch.tsx`, `separator.tsx`: restyled to BWS tokens but currently unused directly —
+    `theme-toggle.tsx` builds its own markup straight on the `radix-ui` `Switch` primitive instead
+    (icon-swap-on-knob-pass behavior doesn't fit the generic component).
+  - `navigation-menu.tsx`: **left as pure vanilla shadcn output, unused.** Radix wraps
+    `NavigationMenu.Root`'s children in an internal `position: relative` div that shrinks to the
+    trigger's width — that collapsed the full-bleed, 56px-inset mega-menu panel. `site-header.tsx`
+    builds the Packs mega-menu directly with plain hover/focus-within instead; don't try to move
+    it onto this primitive without solving that positioning issue first.
+  - `collapsible.tsx`: identical to canonical, no BWS customization needed.
 - `components/site/` — BWS-specific layout components: `site-header.tsx` (nav + Packs
   mega-menu + mobile hamburger), `site-footer.tsx`, `theme-toggle.tsx`, `floating-slots-panel.tsx`,
   plus small shared pieces (`live-dot.tsx`, `slot-dots.tsx`).
