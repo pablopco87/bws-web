@@ -113,7 +113,7 @@ function DesktopPanel() {
         </CollapsibleTrigger>
       </div>
       <CollapsibleContent>
-        <div className="py-1.5">
+        <div className="pt-1.5">
           {tandas.map((tanda) => (
             <TandaRow key={tanda.number} tanda={tanda} />
           ))}
