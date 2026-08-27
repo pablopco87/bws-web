@@ -1,0 +1,179 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/*
+ * BWS design tokens — ported literally from design/project/Foundations BWS.dc.html.
+ * Dark is the default theme (no @media prefers-color-scheme switch); light is an explicit
+ * override activated by [data-theme="light"] on <html>, set by next-themes (see
+ * components/theme-provider.tsx). Do not add new raw hex values in components — extend this
+ * file and consume the resulting Tailwind utilities (bg-background, text-muted, etc.) instead.
+ */
+
+:root {
+  /* surfaces */
+  --background: #0a0a0b;
+  --surface-alt: #0d0d10; /* banded sections (.bwsalt) */
+  --surface-footer: #08080a; /* footer background (.bwsdark) */
+  --surface-card: #0e0e11; /* pack card fill (.bwspack) */
+  --surface-card-hover: #101014;
+  --surface-panel: rgb(14 14 17 / 94%); /* floating slots panel */
+  --surface-dropdown: rgb(14 14 17 / 97%); /* mega-menu / dropdown */
+
+  /* text */
+  --foreground: #ededf0;
+  --muted: #a1a1aa; /* secondary */
+  --muted-2: #7d7d86; /* tertiary */
+  --muted-3: #55555f; /* micro-label mono */
+  --on-accent: #06120c; /* text on solid accent fill — identical in both themes */
+
+  /* accent */
+  --accent: #4ade80;
+  --accent-hover: #6bf39b;
+  --link-hover: #9dfcc2;
+
+  /* borders */
+  --border: #33333a; /* buttons, toggle, chips */
+  --border-hairline: #22222a; /* panel/card borders, section rules */
+  --border-divider: #1c1c22; /* header/footer hairlines */
+
+  /* slot status */
+  --slot-full: var(--accent);
+  --slot-full-border: rgb(74 222 128 / 34%);
+  --slot-half: var(--muted-2);
+  --slot-half-border: var(--border);
+
+  /* mega-menu grid backdrop */
+  --mega-grid-line: #16161c;
+
+  /* shadows */
+  --shadow-dropdown: 0 26px 64px rgb(0 0 0 / 60%);
+  --shadow-panel: 0 24px 60px rgb(0 0 0 / 55%);
+  --shadow-btn-hover: 0 10px 28px rgb(74 222 128 / 18%);
+}
+
+:root[data-theme="light"] {
+  --background: #fafaf9;
+  --surface-alt: #f1f0ec;
+  --surface-footer: #f1f0ec;
+  --surface-card: #fafaf9;
+  --surface-card-hover: #f4f3f0;
+  --surface-panel: rgb(250 250 249 / 96%);
+  --surface-dropdown: rgb(250 250 249 / 98%);
+
+  --foreground: #17181a;
+  --muted: #64655d;
+  --muted-2: #82837a;
+  --muted-3: #9b9c91;
+  --on-accent: #06120c;
+
+  --accent: #17a354;
+  --accent-hover: #0f7c3e;
+  --link-hover: #0f7c3e;
+
+  --border: #cfccc2;
+  --border-hairline: #e0ded6;
+  --border-divider: #e4e2da;
+
+  --slot-full: var(--accent);
+  --slot-full-border: rgb(23 163 84 / 40%);
+  --slot-half: #6e6f66;
+  --slot-half-border: var(--border);
+
+  --mega-grid-line: #e6e4dc;
+
+  --shadow-dropdown: 0 26px 64px rgb(0 0 0 / 14%);
+  --shadow-panel: 0 24px 60px rgb(23 24 26 / 13%);
+  --shadow-btn-hover: 0 10px 28px rgb(74 222 128 / 18%);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface-alt: var(--surface-alt);
+  --color-surface-footer: var(--surface-footer);
+  --color-surface-card: var(--surface-card);
+  --color-surface-card-hover: var(--surface-card-hover);
+  --color-surface-panel: var(--surface-panel);
+  --color-surface-dropdown: var(--surface-dropdown);
+
+  --color-muted: var(--muted);
+  --color-muted-2: var(--muted-2);
+  --color-muted-3: var(--muted-3);
+  --color-on-accent: var(--on-accent);
+
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-link-hover: var(--link-hover);
+
+  --color-border: var(--border);
+  --color-border-hairline: var(--border-hairline);
+  --color-border-divider: var(--border-divider);
+
+  --color-slot-full: var(--slot-full);
+  --color-slot-full-border: var(--slot-full-border);
+  --color-slot-half: var(--slot-half);
+  --color-slot-half-border: var(--slot-half-border);
+
+  --color-mega-grid-line: var(--mega-grid-line);
+
+  --shadow-dropdown: var(--shadow-dropdown);
+  --shadow-panel: var(--shadow-panel);
+  --shadow-btn-hover: var(--shadow-btn-hover);
+
+  --font-sans: var(--font-archivo);
+  --font-mono: var(--font-ibm-plex-mono);
+
+  --animate-blink: blink 2.4s infinite;
+  --animate-accordion-down: accordion-down 0.25s ease-out;
+  --animate-accordion-up: accordion-up 0.25s ease-out;
+}
+
+@keyframes blink {
+  0%,
+  62% {
+    opacity: 1;
+  }
+  63%,
+  100% {
+    opacity: 0.22;
+  }
+}
+@keyframes accordion-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border-hairline;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+    transition:
+      background-color 0.4s ease,
+      color 0.4s ease;
+  }
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+}
+
+/* Dark has no dedicated asset: it reuses the "light" SVG marks and inverts them in light
+   mode. Decision closed in Foundations §05 — do not add bws-dark.svg/sss-dark.svg back in. */
+[data-theme="light"] .bws-logo {
+  filter: invert(1) brightness(0.18);
+}
+
