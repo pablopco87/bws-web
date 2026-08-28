@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { Breadcrumb } from "@/components/site/breadcrumb";
+import { Container } from "@/components/site/container";
 import { FaqAccordion } from "@/components/site/faq-accordion";
 
 export const metadata: Metadata = {
@@ -19,8 +20,8 @@ export default function FaqPage() {
     <>
       <Breadcrumb items={[{ label: "INICIO", href: "/" }, { label: "FAQ" }]} />
 
-      <div className="px-[18px] pt-16 lg:px-14 lg:pt-[120px]">
-        <div className="mx-auto max-w-[1160px]">
+      <Container className="pt-16 lg:pt-[120px]">
+        <Container size="content">
           <div className="font-mono text-[11.5px] tracking-[0.16em] text-accent">
             FAQ · 13 PREGUNTAS
           </div>
@@ -31,13 +32,13 @@ export default function FaqPage() {
             Material, plazos, reserva de turno y licencia de los STL. Si falta algo, escríbenos y
             lo respondemos por email.
           </p>
-        </div>
+        </Container>
 
-        <div className="mx-auto mt-14 max-w-[1160px] lg:mt-[72px]">
+        <Container size="content" className="mt-14 lg:mt-[72px]">
           <FaqAccordion />
-        </div>
+        </Container>
 
-        <div className="mx-auto max-w-[1160px] pb-20 lg:pb-[120px]">
+        <Container size="content" className="pb-20 lg:pb-[120px]">
           <Link
             href="/contacto"
             className="group mt-14 inline-flex items-center gap-[7px] border-b border-accent/32 text-base text-accent transition-colors duration-200 hover:border-link-hover hover:text-link-hover lg:mt-[72px]"
@@ -47,8 +48,8 @@ export default function FaqPage() {
               →
             </span>
           </Link>
-        </div>
-      </div>
+        </Container>
+      </Container>
     </>
   );
 }

@@ -1,3 +1,4 @@
+import { Container } from "@/components/site/container";
 import { FloatingSlotsPanel } from "@/components/site/floating-slots-panel";
 
 /**
@@ -10,7 +11,7 @@ import { FloatingSlotsPanel } from "@/components/site/floating-slots-panel";
 export default function Home() {
   return (
     <>
-      <div className="mx-auto flex max-w-[1440px] flex-col gap-6 px-[18px] py-24 lg:px-14">
+      <Container className="flex flex-col gap-6 py-24">
         <div className="font-mono text-[11.5px] tracking-[0.16em] text-accent">
           BWS · COMPONENT PREVIEW
         </div>
@@ -23,7 +24,7 @@ export default function Home() {
           interruptor de tema arriba a la derecha, abre &ldquo;Packs&rdquo; y reduce la ventana
           para ver el comportamiento mobile.
         </p>
-      </div>
+      </Container>
       <FloatingSlotsPanel />
     </>
   );

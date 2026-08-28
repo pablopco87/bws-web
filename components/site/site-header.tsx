@@ -5,6 +5,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { ChevronDown, ShoppingBag } from "lucide-react";
 
+import { Container } from "@/components/site/container";
 import { PacksMegaMenu } from "@/components/site/packs-mega-menu";
 import { MobileNav } from "@/components/site/mobile-nav";
 import { ThemeToggle } from "@/components/site/theme-toggle";
@@ -21,7 +22,7 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border-divider bg-background/85 backdrop-blur-sm">
-      <div className="relative mx-auto flex h-[84px] max-w-[1440px] items-center justify-between px-[18px] lg:px-14">
+      <Container className="relative flex h-[84px] items-center justify-between">
         <Link href="/" aria-label="Brutal Work Studio · inicio" className="shrink-0">
           <Image
             src="/logos/bws-wordmark.svg"
@@ -82,7 +83,7 @@ export function SiteHeader() {
           <ThemeToggle />
           <MobileNav />
         </div>
-      </div>
+      </Container>
     </header>
   );
 }
