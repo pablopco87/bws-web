@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { ChevronDown, ShoppingBag } from "lucide-react";
 
 import { PacksMegaMenu } from "@/components/site/packs-mega-menu";
 import { MobileNav } from "@/components/site/mobile-nav";
 import { ThemeToggle } from "@/components/site/theme-toggle";
 import { navLinks } from "@/lib/site-config";
+import { cn } from "@/lib/utils";
 
 /**
  * Root layout component present on every page (design/project/Foundations BWS.dc.html §04).
@@ -15,6 +17,8 @@ import { navLinks } from "@/lib/site-config";
  * hamburger → MobileNav's full-screen sheet with Packs as an accordion (16b).
  */
 export function SiteHeader() {
+  const pathname = usePathname();
+
   return (
     <header className="sticky top-0 z-40 border-b border-border-divider bg-background/85 backdrop-blur-sm">
       <div className="relative mx-auto flex h-[84px] max-w-[1440px] items-center justify-between px-[18px] lg:px-14">
@@ -48,7 +52,10 @@ export function SiteHeader() {
             <Link
               key={link.href}
               href={link.href}
-              className="transition-colors duration-[180ms] hover:text-accent"
+              className={cn(
+                "transition-colors duration-[180ms] hover:text-accent",
+                pathname === link.href && "text-foreground"
+              )}
             >
               {link.label}
             </Link>

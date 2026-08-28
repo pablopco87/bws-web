@@ -4,7 +4,6 @@ import { Archivo, IBM_Plex_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
-import { FloatingSlotsPanel } from "@/components/site/floating-slots-panel";
 
 import "./globals.css";
 
@@ -38,7 +37,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <SiteHeader />
           <main className="flex-1">{children}</main>
           <SiteFooter />
-          <FloatingSlotsPanel />
         </ThemeProvider>
       </body>
     </html>
