@@ -101,6 +101,21 @@ If `/design-sync` isn't available as a slash command in a given session, use the
 tool directly: `list_projects` to find (or `create_project` to create) the "Brutal Work Studio"
 design-system project, then the usual `list_files` → `finalize_plan` → `write_files` flow.
 
+## Disciplina de trabajo: modo plan y verificación independiente
+
+**Modo plan.** Antes de tocar código en tareas grandes o ambiguas (páginas nuevas, flujo de
+reserva/señal, lógica de checkout, cualquier trabajo sobre la geometría/interacción del hero con
+STL, PRs grandes), presenta primero un plan: qué archivos vas a crear o modificar, qué componentes
+o dependencias tocas, y en qué orden. Espera confirmación antes de ejecutar. Para cambios pequeños
+y acotados (ajuste de un color, un spacing, un prop de un componente ya existente) no hace falta
+plan previo, se ejecuta directo.
+
+**Verificación independiente.** En cambios de alto riesgo (lógica de dinero o checkout, el flujo
+de señal/reserva, geometría STL real, merge de un PR grande a main) el resultado debe revisarlo
+una sesión o instancia distinta de la que implementó el cambio, no la misma conversación que lo
+escribió — evita que el mismo hilo se autovalide con su propio contexto y sesgo. En páginas o
+contenido estático de bajo riesgo (FAQ, Sobre Nosotros, copy) no es necesario.
+
 ## Commands
 
 - `npm run dev` — dev server (Turbopack)
