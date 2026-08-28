@@ -122,6 +122,15 @@ contenido estático de bajo riesgo (FAQ, Sobre Nosotros, copy) no es necesario.
 - `npm run build` — production build (also type-checks)
 - `npm run lint` — ESLint (the `design/` bundle is excluded — don't lint or "fix" it)
 
+## Password gate (temporary, pre-launch)
+
+`middleware.ts` puts the whole site behind HTTP Basic Auth so brutalworkstudio.com (live on
+Vercel Hobby, no native Deployment Protection) isn't public before real launch. Gate is skipped
+locally when `SITE_PASSWORD` is unset, so `npm run dev` never prompts; on Vercel it must be set
+(Production + Preview) or the site is fully open. To remove at launch: delete `middleware.ts` (or
+empty its `matcher`) **and** remove `SITE_PASSWORD` from Vercel, then redeploy — see the comment
+at the top of the file for the full rationale.
+
 <!-- BEGIN:nextjs-agent-rules -->
 
 # This is NOT the Next.js you know
