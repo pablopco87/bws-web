@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 
+import { Container } from "@/components/site/container";
 import { footerLinks } from "@/lib/site-config";
 
 /**
@@ -11,8 +12,8 @@ import { footerLinks } from "@/lib/site-config";
  */
 export function SiteFooter() {
   return (
-    <footer className="relative overflow-hidden bg-surface-footer px-[18px] py-16 text-foreground lg:px-14 lg:pt-[88px] lg:pb-10">
-      <div className="mx-auto grid max-w-[1440px] gap-10 border-b border-border-divider pb-12 lg:grid-cols-[1fr_200px_200px] lg:gap-12 lg:pb-16">
+    <footer className="relative overflow-hidden bg-surface-footer py-16 text-foreground lg:pt-[88px] lg:pb-10">
+      <Container className="grid gap-10 border-b border-border-divider pb-12 lg:grid-cols-[1fr_200px_200px] lg:gap-12 lg:pb-16">
         <div>
           <div className="max-w-[620px] text-[34px] leading-[1.08] font-semibold tracking-[-0.03em] lg:text-[58px] lg:leading-[1.05] lg:tracking-[-0.035em]">
             Hecho por jugadores
@@ -26,9 +27,9 @@ export function SiteFooter() {
 
         <FooterColumn title="TIENDA" links={footerLinks.tienda} />
         <FooterColumn title="ESTUDIO" links={footerLinks.estudio} />
-      </div>
+      </Container>
 
-      <div className="mx-auto max-w-[1440px]">
+      <Container>
         <Image
           src="/logos/bws-full.svg"
           alt="Brutal Work Studio"
@@ -51,7 +52,7 @@ export function SiteFooter() {
             ))}
           </div>
         </div>
-      </div>
+      </Container>
     </footer>
   );
 }

@@ -38,7 +38,8 @@ Next.js (App Router) + TypeScript + Tailwind CSS v4, with shadcn/ui components b
   - `collapsible.tsx`: identical to canonical, no BWS customization needed.
 - `components/site/` — BWS-specific layout components: `site-header.tsx` (nav + Packs
   mega-menu + mobile hamburger), `site-footer.tsx`, `theme-toggle.tsx`, `floating-slots-panel.tsx`,
-  plus small shared pieces (`live-dot.tsx`, `slot-dots.tsx`).
+  `container.tsx` (see "Page container" below), `breadcrumb.tsx`, plus small shared pieces
+  (`live-dot.tsx`, `slot-dots.tsx`).
 - `lib/data/packs.ts`, `lib/data/slots.ts` — mock content for the five packs and manufacturing
   tandas. Replace with real data sources when the backend exists; keep the shapes stable so the
   components don't need to change.
@@ -62,6 +63,26 @@ background bug on the Home prototype, and Battle Ready's mega-menu slot badge di
 its own brief text. If you find more of these while porting a page, fix them the same way —
 prefer the formalized decision in `design/project/Foundations BWS.dc.html` or the explicit brief
 text in the chats over a one-off markup artifact.
+
+## Page container
+
+`components/site/container.tsx` is the **only** place page max-width and horizontal padding are
+defined — `SiteHeader`, `SiteFooter`, `Breadcrumb`, and every page's top-level wrapper use it.
+**Never write `max-w-[...]`/`px-[...]` for page content directly in a component or page — always
+wrap in `<Container>`.** Two sizes: `size="page"` (default, 1440px canvas + 18px/56px gutters —
+matches every `.dc.html` artboard's fixed width and `padding: 0 56px`/`18px` mobile) and
+`size="content"` (1160px reading column, no gutter of its own — nest it inside a `size="page"`
+Container; it's the pattern Foundations/Sobre Nosotros/FAQ/Checkout use for long-form text and
+accordions, not a FAQ-specific value).
+
+This existed as duplicated literals per component before (each of header/footer/breadcrumb/pages
+typed out its own `max-w-[1440px] px-[18px] lg:px-14`) and silently misaligned on any viewport
+wider than 1552px (max-width + 2×padding): footer and breadcrumb had padding on the *outer*
+element and max-width on a *nested* child, header and pages had both on the *same* element — two
+nesting orders that only produce the same result below that width. `Container` always keeps both
+on the same element, which removes the bug at the source, not just the duplication. When building
+a new page (Sobre Nosotros, Packs, Producto, Slider System, STL, Checkout), reach for `Container`
+first — don't copy a `max-w`/`px` pattern from an existing page's markup.
 
 ## Responsive behavior that's actually decided
 
