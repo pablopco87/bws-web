@@ -30,8 +30,8 @@ export function FaqAccordion() {
           )}
         >
           <AccordionPrimitive.Header>
-            <AccordionPrimitive.Trigger className="group flex w-full cursor-pointer items-baseline gap-5 border-0 bg-transparent p-0 text-left outline-none">
-              <span className="w-[118px] shrink-0 font-mono text-[11px] tracking-[0.14em] text-muted-2 transition-colors duration-[250ms] group-hover:text-accent group-data-[state=open]:text-accent">
+            <AccordionPrimitive.Trigger className="group flex w-full cursor-pointer items-baseline gap-3 border-0 bg-transparent p-0 text-left outline-none lg:gap-5">
+              <span className="w-14 shrink-0 font-mono text-[11px] tracking-[0.14em] text-muted-2 transition-colors duration-[250ms] group-hover:text-accent group-data-[state=open]:text-accent lg:w-[118px]">
                 {item.index}
               </span>
               <span className="flex-1 text-[27px] leading-[1.15] font-medium tracking-[-0.015em] text-muted-2 transition-colors duration-[250ms] group-hover:text-foreground group-data-[state=open]:text-foreground">
@@ -43,7 +43,7 @@ export function FaqAccordion() {
             </AccordionPrimitive.Trigger>
           </AccordionPrimitive.Header>
           <AccordionPrimitive.Content className="overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
-            <div className="max-w-[760px] pt-3.5 pl-[138px] text-[15.5px] leading-[1.55] text-muted">
+            <div className="max-w-[760px] pt-3.5 pl-[68px] text-[15.5px] leading-[1.55] text-muted lg:pl-[138px]">
               {item.answer}
               {item.index === "P·07" && (
                 <>
