@@ -6,12 +6,12 @@ import type { Tanda } from "@/lib/data/slots";
  * is still queued (not the next one up) — see lib/data/slots.ts.
  */
 export function SlotDots({ tanda, className }: { tanda: Tanda; className?: string }) {
-  const taken = tanda.totalSlots - tanda.freeSlots;
+  const taken = tanda.totalHalfSlots - tanda.freeHalfSlots;
   const live = tanda.status === "next";
 
   return (
     <span className={cn("flex shrink-0 gap-[5px]", className)}>
-      {Array.from({ length: tanda.totalSlots }, (_, i) => {
+      {Array.from({ length: tanda.totalHalfSlots }, (_, i) => {
         const isFilled = i < taken;
         return (
           <span

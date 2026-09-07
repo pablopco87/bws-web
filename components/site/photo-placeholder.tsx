@@ -25,7 +25,9 @@ export function PhotoPlaceholder({
       )}
       style={{ aspectRatio: aspect }}
     >
-      <div className="font-mono text-[11.5px] tracking-[0.16em] text-accent">{label}</div>
+      {label && (
+        <div className="font-mono text-[11.5px] tracking-[0.16em] text-accent">{label}</div>
+      )}
       <div className="max-w-[78%] font-mono text-[10.5px] leading-[1.7] tracking-[0.1em] text-muted-3">
         {caption}
       </div>

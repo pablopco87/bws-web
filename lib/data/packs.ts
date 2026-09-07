@@ -1,6 +1,5 @@
 export type SlotCost = "full" | "half";
 export type PackCategory = "mesa" | "piezas";
-export type PackAvailability = "libre" | "en-cola";
 
 export interface Pack {
   slug: string;
@@ -9,11 +8,21 @@ export interface Pack {
   megaLabel: string;
   category: PackCategory;
   slotCost: SlotCost;
+  /** Short closed description — the /packs catalog card copy. Doubles as the product-page hero
+   *  claim for packs that don't have one of their own (see `heroClaim`). */
+  description: string;
   /**
-   * Binary availability shown in the mobile nav (design/project/Responsive Mobile BWS.dc.html,
-   * 16b): global LIBRE/EN COLA per pack, independent of the desktop mega-menu's slot-cost badge.
+   * Product-page hero claim, only closed for Tournament (design/project/Packs BWS ·
+   * Tournament.dc.html) — the other four packs never got their own template pass in the design
+   * tool, so their product page reuses `description` instead of inventing new marketing copy.
    */
-  availability: PackAvailability;
+  heroClaim?: string;
+  /**
+   * Piece count — closed only for Ruined Buildings (the one real content number across the
+   * whole catalog: design/project/Packs BWS.dc.html, chat4.md). Everywhere else this is an
+   * explicit "—" placeholder, not a number to invent.
+   */
+  pieceCount?: number;
   /** Schematic wireframe icon for the mega-menu preview, viewBox "0 0 200 140". */
   icon: string[];
 }
@@ -33,7 +42,10 @@ export const packs: Pack[] = [
     megaLabel: "MESA COMPLETA",
     category: "mesa",
     slotCost: "full",
-    availability: "libre",
+    description:
+      "Cobertura de mesa completa para partida de torneo. Desglose de piezas pendiente de cierre.",
+    heroClaim:
+      "Mesa de torneo completa en un solo pedido. Muros, ruinas y bloqueadores con unión Slider System, listos para montar un layout oficial sin pegamento.",
     icon: [
       "M24 96 L100 56 L176 96 L100 136 Z",
       "M24 96 V60 L100 20 L176 60 v36",
@@ -46,7 +58,8 @@ export const packs: Pack[] = [
     megaLabel: "MEDIA MESA",
     category: "mesa",
     slotCost: "half",
-    availability: "libre",
+    description:
+      "Cobertura de media mesa, para completar entre dos jugadores o empezar por la mitad. Desglose de piezas pendiente de cierre.",
     icon: ["M28 112 h144 M28 112 V70 h60 v42 M96 112 V52 h48 v60"],
   },
   {
@@ -55,7 +68,8 @@ export const packs: Pack[] = [
     megaLabel: "RUINAS EN L",
     category: "piezas",
     slotCost: "half",
-    availability: "en-cola",
+    description: "8 piezas en L de ruinas altas y piezas bajas con el mismo footprint.",
+    pieceCount: 8,
     icon: [
       "M32 116 h136 M32 116 V52 l40 -24 v64",
       "M72 92 h96 v24 M112 92 V44 l56 -20 v68",
@@ -67,7 +81,7 @@ export const packs: Pack[] = [
     megaLabel: "MEDIA ALTURA",
     category: "piezas",
     slotCost: "half",
-    availability: "en-cola",
+    description: "Dispositivos de energía, acueducto alto y barricadas.",
     icon: ["M28 110 h144 M44 110 V78 h32 v32 M92 110 V66 h32 v44 M140 110 V86 h24 v24"],
   },
   {
@@ -76,7 +90,7 @@ export const packs: Pack[] = [
     megaLabel: "COBERTURA BAJA",
     category: "piezas",
     slotCost: "half",
-    availability: "en-cola",
+    description: "Muros bajos de escombros.",
     icon: ["M28 112 h144 M28 112 V84 h144 v28 M40 84 V68 h40 v16 M104 84 V60 h44 v24"],
   },
 ];
