@@ -22,8 +22,17 @@ export const footerLinks = {
     { label: "Aviso legal", href: "/legal/aviso-legal" },
     { label: "Privacidad", href: "/legal/privacidad" },
     { label: "Cookies", href: "/legal/cookies" },
+    { label: "Licencia de uso", href: "/legal/licencia-uso" },
     { label: "Términos y condiciones", href: "/legal/terminos" },
     { label: "Envíos y devoluciones", href: "/legal/envios" },
     { label: "Contacto", href: "/contacto" },
   ],
 } as const;
+
+/**
+ * "Blog" stays out of the footer until there's editorial planning and real content behind it —
+ * same "absent env var = safe default" pattern as `SITE_PASSWORD` in middleware.ts (the only
+ * other visibility gate in this repo; no Stripe/Sanity flag exists yet to mirror instead). Set
+ * `BLOG_ENABLED=true` in Vercel when the blog is ready to link — no code change needed then.
+ */
+export const blogEnabled = process.env.BLOG_ENABLED === "true";
