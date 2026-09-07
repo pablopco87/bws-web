@@ -35,13 +35,13 @@ function AccordionTrigger({
       <AccordionPrimitive.Trigger
         data-slot="accordion-trigger"
         className={cn(
-          "flex flex-1 items-center justify-between gap-4 py-[18px] text-left text-[19px] font-medium outline-none transition-colors [&[data-state=open]]:text-accent",
+          "group flex flex-1 items-center justify-between gap-4 py-[18px] text-left text-[19px] font-medium outline-none transition-colors [&[data-state=open]]:text-accent",
           className
         )}
         {...props}
       >
         {children}
-        <ChevronDownIcon className="size-[18px] shrink-0 text-muted-2 transition-transform duration-300 [[data-state=open]_&]:rotate-180 [[data-state=open]_&]:text-accent" />
+        <ChevronDownIcon className="size-[18px] shrink-0 text-muted-2 transition-transform duration-300 group-data-[state=open]:rotate-180 group-data-[state=open]:text-accent" />
       </AccordionPrimitive.Trigger>
     </AccordionPrimitive.Header>
   )
