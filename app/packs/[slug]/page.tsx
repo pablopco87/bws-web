@@ -51,6 +51,13 @@ const GALLERY_CAPTIONS = [
  * /"Galería" are 100% placeholder in the source for EVERY pack including Tournament — built here
  * as static grids (not the drag-carousel/piece-selector/lightbox from the mockup) since there's
  * no real piece data yet to make that interactivity worth building.
+ *
+ * "Qué incluye" and "Especificaciones técnicas" were originally two separate sections (mirroring
+ * the source .dc.html), but with identical placeholder content per piece they read as the same
+ * card twice — merged into one "Qué incluye" grid where each tile also carries the technical row
+ * (ancho/alto/fondo/LDV) at its own foot, with the pack-wide "común a todo el pack" block moved
+ * to the end of the module. Sections after it renumbered accordingly (Galería 03, Slider System
+ * 04, Fabricación 05, cross-selling 06).
  */
 export default async function PackPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -105,25 +112,31 @@ export default async function PackPage({ params }: { params: Promise<{ slug: str
         </div>
       </Container>
 
-      {/* 02 · Qué incluye */}
+      {/* 02 · Qué incluye (fusiona el antiguo "Especificaciones técnicas" — misma tarjeta,
+          info técnica añadida al pie en vez de una sección aparte y casi idéntica) */}
       <div id="que-incluye" className="scroll-mt-20 border-t border-border-divider bg-surface-alt py-16 lg:py-20">
         <Container>
           <SectionHeading
             eyebrow="02 — CONTENIDO DEL PACK"
             title="Qué incluye"
-            note="LISTADO PENDIENTE DE CONFIRMAR"
+            note="LISTADO Y COTAS PENDIENTES DE CONFIRMAR"
           />
-          <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:mt-12 lg:grid-cols-4">
+          <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:mt-12">
             {Array.from({ length: 8 }, (_, i) => (
-              <div key={i} className="flex flex-col border border-border-hairline p-4">
+              <div key={i} className="flex flex-col border border-border-hairline p-5">
                 <PhotoPlaceholder aspect="1/1" label="" caption="RENDER 3/4 · PENDIENTE" />
-                <div className="mt-3 font-mono text-[9.5px] tracking-[0.1em] text-muted-3">
+                <div className="mt-4 font-mono text-[9.5px] tracking-[0.1em] text-muted-3">
                   [BWS-XX-{String(i + 1).padStart(2, "0")}]
                 </div>
                 <div className="mt-1.5 text-sm font-medium">[NOMBRE DE PIEZA]</div>
-                <div className="mt-2 flex justify-between font-mono text-[10.5px] text-muted-3">
-                  <span>[XX] UD</span>
-                  <span>[XX cm]</span>
+                <div className="mt-2 font-mono text-[10.5px] text-muted-3">[XX] UD</div>
+                <div className="mt-4 grid grid-cols-4 gap-2 border-t border-border-hairline pt-4">
+                  {["ANCHO", "ALTO", "FONDO", "LDV"].map((m) => (
+                    <div key={m}>
+                      <div className="font-mono text-[9px] tracking-[0.1em] text-muted-3">{m}</div>
+                      <div className="mt-1 font-mono text-xs">[XX cm]</div>
+                    </div>
+                  ))}
                 </div>
               </div>
             ))}
@@ -132,55 +145,25 @@ export default async function PackPage({ params }: { params: Promise<{ slug: str
             Total de piezas del pack: [XX]. Piezas, medidas y bolsas de entrega pendientes de
             cierre.
           </p>
+          <div className="mt-10 border border-border-hairline p-7 lg:mt-12 lg:p-8">
+            <div className="font-mono text-[10.5px] tracking-[0.13em] text-muted-3">
+              COMÚN A TODO EL PACK
+            </div>
+            <div className="mt-5 grid grid-cols-2 gap-6 sm:grid-cols-5">
+              <MetaField label="MATERIAL" value="PLA Bambu Lab" small />
+              <MetaField label="IMPRESORA" value="Bambu Lab A1" small />
+              <MetaField label="COLOR" value="Gris" small />
+              <MetaField label="ALTURA DE CAPA" value="[X,XX mm]" small />
+              <MetaField label="TOLERANCIA" value="[±X,XX mm]" small />
+            </div>
+          </div>
         </Container>
       </div>
 
-      {/* 03 · Especificaciones técnicas */}
-      <Container className="py-16 lg:py-20">
-        <SectionHeading
-          eyebrow="03 — COTAS Y MATERIAL"
-          title="Especificaciones técnicas"
-          note="MEDIDAS EN CM · PENDIENTES DE MEDICIÓN FINAL"
-        />
-        <div className="mt-10 border border-border-hairline p-7 lg:mt-12 lg:p-8">
-          <div className="font-mono text-[10.5px] tracking-[0.13em] text-muted-3">
-            COMÚN A TODO EL PACK
-          </div>
-          <div className="mt-5 grid grid-cols-2 gap-6 sm:grid-cols-5">
-            <MetaField label="MATERIAL" value="PLA Bambu Lab" small />
-            <MetaField label="IMPRESORA" value="Bambu Lab A1" small />
-            <MetaField label="COLOR" value="Gris" small />
-            <MetaField label="ALTURA DE CAPA" value="[X,XX mm]" small />
-            <MetaField label="TOLERANCIA" value="[±X,XX mm]" small />
-          </div>
-        </div>
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 6 }, (_, i) => (
-            <div key={i} className="border border-border-hairline p-6">
-              <div className="flex items-baseline justify-between gap-2">
-                <span className="font-mono text-[10.5px] tracking-[0.12em] text-muted-3">
-                  PIEZA {String(i + 1).padStart(2, "0")}
-                </span>
-                <span className="font-mono text-[10px] text-muted-3">[BWS-XX-{String(i + 1).padStart(2, "0")}]</span>
-              </div>
-              <div className="mt-2 text-base font-medium">[NOMBRE DE PIEZA]</div>
-              <div className="mt-4 grid grid-cols-4 gap-2 border-t border-border-hairline pt-4">
-                {["ANCHO", "ALTO", "FONDO", "LDV"].map((m) => (
-                  <div key={m}>
-                    <div className="font-mono text-[9px] tracking-[0.1em] text-muted-3">{m}</div>
-                    <div className="mt-1 font-mono text-xs">[XX cm]</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </Container>
-
-      {/* 04 · Galería */}
+      {/* 03 · Galería */}
       <div className="border-t border-border-divider bg-surface-alt py-16 lg:py-20">
         <Container>
-          <SectionHeading eyebrow="04 — GALERÍA" title="Detalle" note="9 HUECOS · PENDIENTES" />
+          <SectionHeading eyebrow="03 — GALERÍA" title="Detalle" note="9 HUECOS · PENDIENTES" />
           <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:mt-12">
             {GALLERY_CAPTIONS.map((caption, i) => (
               <PhotoPlaceholder
@@ -194,12 +177,12 @@ export default async function PackPage({ params }: { params: Promise<{ slug: str
         </Container>
       </div>
 
-      {/* 05 · Slider System aplicado */}
+      {/* 04 · Slider System aplicado */}
       <Container className="py-16 lg:py-20">
         <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
           <div>
             <div className="font-mono text-[11.5px] tracking-[0.16em] text-accent">
-              05 — SLIDER SYSTEM™ APLICADO
+              04 — SLIDER SYSTEM™ APLICADO
             </div>
             <h2 className="mt-5 text-[28px] leading-[1.14] font-semibold tracking-[-0.02em] lg:text-[36px]">
               Cómo encaja este pack
@@ -233,13 +216,13 @@ export default async function PackPage({ params }: { params: Promise<{ slug: str
         </div>
       </Container>
 
-      {/* 06 · Proceso de fabricación */}
+      {/* 05 · Proceso de fabricación */}
       <div className="border-t border-border-divider bg-surface-alt py-16 lg:py-20">
         <Container>
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <div className="font-mono text-[11.5px] tracking-[0.16em] text-accent">
-                06 — FABRICACIÓN
+                05 — FABRICACIÓN
               </div>
               <h2 className="mt-5 text-[28px] leading-[1.14] font-semibold tracking-[-0.02em] lg:text-[36px]">
                 Qué pasa cuando reservas
@@ -262,10 +245,10 @@ export default async function PackPage({ params }: { params: Promise<{ slug: str
         </Container>
       </div>
 
-      {/* 07 · Cross-selling */}
+      {/* 06 · Cross-selling */}
       <Container className="py-16 lg:py-20">
         <SectionHeading
-          eyebrow="07 — OTROS PACKS FÍSICOS"
+          eyebrow="06 — OTROS PACKS FÍSICOS"
           title="Completa la mesa"
           note="PRECIOS PROVISIONALES · [PLACEHOLDER]"
         />
