@@ -93,15 +93,7 @@ export default async function PackPage({ params }: { params: Promise<{ slug: str
               <MetaField label="PRECIO" value="[PRECIO]" />
             </dl>
 
-            <div className="mt-9 flex flex-wrap items-start gap-x-4 gap-y-4">
-              <AvailabilityCTA pack={pack} />
-              <Link
-                href="#que-incluye"
-                className="flex h-[52px] items-center border border-border px-[26px] text-[15px] font-medium transition-colors duration-200 hover:border-accent hover:text-accent"
-              >
-                Ver qué incluye
-              </Link>
-            </div>
+            <AvailabilityCTA pack={pack} className="mt-9" />
           </div>
 
           <PhotoPlaceholder
