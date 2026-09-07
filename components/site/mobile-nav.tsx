@@ -25,7 +25,13 @@ import { navLinks } from "@/lib/site-config";
 /**
  * Full-screen mobile menu — closed direction 16b (design/project/Responsive Mobile BWS.dc.html):
  * "Packs" is an accordion row expanding in place (no separate layer), chevron rotates 180°,
- * all five packs always listed with a binary LIBRE/EN COLA badge, tap opens/closes.
+ * all five packs always listed, tap opens/closes.
+ *
+ * 16b's own badge is a binary LIBRE/EN COLA (availability), not the slot-cost badge desktop's
+ * mega-menu uses — deliberately, per that file's own caption ("el detalle por variante vive en
+ * la página de pack, así que en navegación cada variante lleva estado binario"). Pablo asked
+ * explicitly to use the same slot-cost badge as desktop here instead, overriding that; see the
+ * commit that changed this.
  */
 export function MobileNav() {
   const [open, setOpen] = React.useState(false);
@@ -76,10 +82,10 @@ export function MobileNav() {
                     >
                       <span>{pack.name}</span>
                       <Badge
-                        variant={pack.availability === "libre" ? "slot-full" : "slot-half"}
+                        variant={pack.slotCost === "full" ? "slot-full" : "slot-half"}
                         className="shrink-0"
                       >
-                        {pack.availability === "libre" ? "LIBRE" : "EN COLA"}
+                        {pack.slotCost === "full" ? "1 SLOT" : "1/2 SLOT"}
                       </Badge>
                     </Link>
                   ))}
