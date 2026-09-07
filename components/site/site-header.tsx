@@ -44,7 +44,14 @@ export function SiteHeader() {
               Packs
               <ChevronDown className="size-[9px] transition-transform duration-300 group-hover:rotate-180 group-focus-within:rotate-180" />
             </button>
-            <div className="invisible absolute inset-x-[18px] top-full pt-3.5 opacity-0 transition-[opacity,visibility,transform] duration-200 [transform:translateY(-6px)] group-hover:visible group-hover:opacity-100 group-hover:[transform:translateY(0)] group-focus-within:visible group-focus-within:opacity-100 group-focus-within:[transform:translateY(0)] lg:inset-x-14">
+            <div
+              // Clicking a link inside navigates client-side, and SiteHeader isn't remounted by
+              // that navigation — so without this, the link keeps focus after the route change
+              // and group-focus-within (needed for keyboard users tabbing through the menu)
+              // keeps the panel open until an unrelated click steals focus away.
+              onClick={() => (document.activeElement as HTMLElement | null)?.blur?.()}
+              className="invisible absolute inset-x-[18px] top-full pt-3.5 opacity-0 transition-[opacity,visibility,transform] duration-200 [transform:translateY(-6px)] group-hover:visible group-hover:opacity-100 group-hover:[transform:translateY(0)] group-focus-within:visible group-focus-within:opacity-100 group-focus-within:[transform:translateY(0)] lg:inset-x-14"
+            >
               <PacksMegaMenu />
             </div>
           </div>
