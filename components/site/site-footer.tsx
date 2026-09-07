@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 import { Container } from "@/components/site/container";
-import { footerLinks } from "@/lib/site-config";
+import { blogEnabled, footerLinks } from "@/lib/site-config";
 
 /**
  * Root layout footer (design/project/Foundations BWS.dc.html §04 + Home §FOOTER).
@@ -11,6 +11,10 @@ import { footerLinks } from "@/lib/site-config";
  * equalize it like the other five pages, so this component does that from the start.
  */
 export function SiteFooter() {
+  const estudioLinks = blogEnabled
+    ? footerLinks.estudio
+    : footerLinks.estudio.filter((link) => link.label !== "Blog");
+
   return (
     <footer className="relative overflow-hidden bg-surface-footer py-16 text-foreground lg:pt-[88px] lg:pb-10">
       <Container className="grid gap-10 border-b border-border-divider pb-12 lg:grid-cols-[1fr_200px_200px] lg:gap-12 lg:pb-16">
@@ -26,7 +30,7 @@ export function SiteFooter() {
         </div>
 
         <FooterColumn title="TIENDA" links={footerLinks.tienda} />
-        <FooterColumn title="ESTUDIO" links={footerLinks.estudio} />
+        <FooterColumn title="ESTUDIO" links={estudioLinks} />
       </Container>
 
       <Container>
