@@ -66,7 +66,7 @@ function TandaRow({ tanda, dense = false }: { tanda: (typeof tandas)[number]; de
         {live ? "PRÓXIMA ENTREGA" : "LISTA DE ESPERA"}
       </span>
       <span className={cn("font-mono text-[11.5px]", live ? "text-muted" : "text-muted-2")}>
-        {tanda.freeSlots} {tanda.freeSlots === 1 ? "libre" : "libres"}
+        {tanda.freeHalfSlots} {tanda.freeHalfSlots === 1 ? "libre" : "libres"}
       </span>
       <SlotDots tanda={tanda} />
     </div>
@@ -135,8 +135,8 @@ function MobilePill() {
         >
           <LiveDot />
           <span className="font-mono text-[11px] tracking-[0.1em] text-foreground">
-            TANDA {String(nextTanda.number).padStart(2, "0")} · {nextTanda.freeSlots}{" "}
-            {nextTanda.freeSlots === 1 ? "LIBRE" : "LIBRES"}
+            TANDA {String(nextTanda.number).padStart(2, "0")} · {nextTanda.freeHalfSlots}{" "}
+            {nextTanda.freeHalfSlots === 1 ? "LIBRE" : "LIBRES"}
           </span>
           <ChevronDown className="size-3.5 rotate-180 text-muted-2" />
         </button>
@@ -171,7 +171,7 @@ function MobileBar() {
           TANDA {String(nextTanda.number).padStart(2, "0")}
         </div>
         <div className="mt-1 font-mono text-[11.5px] text-accent">
-          {nextTanda.freeSlots} {nextTanda.freeSlots === 1 ? "SLOT LIBRE" : "SLOTS LIBRES"}
+          {nextTanda.freeHalfSlots} {nextTanda.freeHalfSlots === 1 ? "SLOT LIBRE" : "SLOTS LIBRES"}
         </div>
       </div>
       <Link
