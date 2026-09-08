@@ -29,7 +29,7 @@ const ACCENT_LIGHT = "#17a354";
 /** Fraction of the canvas the whole model nudges down/right within the hero, requested after
  *  the first pass looked slightly too high and too far left. */
 const FRAME_SHIFT_X = 0.08;
-const FRAME_SHIFT_Y = 0.11;
+const FRAME_SHIFT_Y = 0.18;
 
 /** Base camera offset from CENTER (mm), scaled up to move the camera proportionally farther
  *  away — for a fixed FOV, apparent size scales ~1/distance, so dividing by 0.85 here shrinks
