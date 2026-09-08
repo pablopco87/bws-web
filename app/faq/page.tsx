@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Breadcrumb } from "@/components/site/breadcrumb";
 import { Container } from "@/components/site/container";
 import { FaqAccordion } from "@/components/site/faq-accordion";
+import { LiveDot } from "@/components/site/live-dot";
 
 export const metadata: Metadata = {
   title: "FAQ · Brutal Work Studio",
@@ -21,7 +22,8 @@ export default function FaqPage() {
       <Breadcrumb items={[{ label: "INICIO", href: "/" }, { label: "FAQ" }]} />
 
       <Container className="pt-16 lg:pt-[120px]">
-        <div className="font-mono text-[11.5px] tracking-[0.16em] text-accent">
+        <div className="flex items-center gap-2.5 font-mono text-[11.5px] tracking-[0.16em] text-muted-3">
+          <LiveDot />
           FAQ · 13 PREGUNTAS
         </div>
         <h1 className="mt-6 max-w-[900px] text-[40px] leading-[1.1] font-semibold tracking-[-0.03em] lg:text-[68px] lg:leading-[1.06] lg:tracking-[-0.04em]">

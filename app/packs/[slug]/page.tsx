@@ -7,6 +7,7 @@ import { AvailabilityCTA } from "@/components/site/availability-cta";
 import { Breadcrumb } from "@/components/site/breadcrumb";
 import { Container } from "@/components/site/container";
 import { FloatingSlotsPanel } from "@/components/site/floating-slots-panel";
+import { LiveDot } from "@/components/site/live-dot";
 import { PackCard } from "@/components/site/pack-card";
 import { PhotoPlaceholder } from "@/components/site/photo-placeholder";
 import { packs } from "@/lib/data/packs";
@@ -74,8 +75,8 @@ export default async function PackPage({ params }: { params: Promise<{ slug: str
       <Container className="pt-14 pb-16 lg:pt-[72px] lg:pb-20">
         <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
           <div>
-            <div className="flex items-center gap-2.5 font-mono text-[11px] tracking-[0.14em] text-accent">
-              <span className="size-1.5 rounded-full bg-accent" />
+            <div className="flex items-center gap-2.5 font-mono text-[11px] tracking-[0.14em] text-muted-3">
+              <LiveDot />
               PACK FÍSICO · {pack.megaLabel} ·{" "}
               {pack.slotCost === "full" ? "1 SLOT" : "1/2 SLOT"} DE FABRICACIÓN
             </div>

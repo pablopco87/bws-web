@@ -4,6 +4,7 @@ import { Play } from "lucide-react";
 
 import { Breadcrumb } from "@/components/site/breadcrumb";
 import { Container } from "@/components/site/container";
+import { LiveDot } from "@/components/site/live-dot";
 import { PhotoPlaceholder } from "@/components/site/photo-placeholder";
 import { Button } from "@/components/ui/button";
 import { SliderSystemCoding } from "@/components/site/slider-system-coding";
@@ -31,7 +32,7 @@ export default function SliderSystemPage() {
         <div className="grid min-w-0 gap-12 lg:grid-cols-[1fr_600px] lg:items-stretch lg:gap-14">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-[11.5px] tracking-[0.16em] text-muted-3">
-              <span className="size-1.5 shrink-0 rounded-full bg-accent" />
+              <LiveDot />
               UNIÓN MECÁNICA · COLA DE MILANO · SIN PEGAMENTO
             </div>
             <h1 className="mt-7 text-[52px] leading-[0.96] font-semibold tracking-[-0.03em] lg:text-[78px]">

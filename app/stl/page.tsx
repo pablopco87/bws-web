@@ -3,6 +3,7 @@ import { FileText } from "lucide-react";
 
 import { Breadcrumb } from "@/components/site/breadcrumb";
 import { Container } from "@/components/site/container";
+import { LiveDot } from "@/components/site/live-dot";
 import { StlRow } from "@/components/site/stl-row";
 import { Button } from "@/components/ui/button";
 import { packs } from "@/lib/data/packs";
@@ -42,8 +43,8 @@ export default function StlPage() {
       <Container className="pt-14 pb-16 lg:pt-[72px] lg:pb-20">
         <div className="grid gap-12 lg:grid-cols-[1fr_420px] lg:items-end lg:gap-16">
           <div>
-            <div className="flex items-center gap-2.5 font-mono text-[11px] tracking-[0.16em] text-accent">
-              <span className="size-1.5 rounded-full bg-accent" />
+            <div className="flex items-center gap-2.5 font-mono text-[11px] tracking-[0.16em] text-muted-3">
+              <LiveDot />
               ARCHIVOS DIGITALES · IMPRIME TÚ MISMO
             </div>
             <h1 className="mt-6 text-[44px] leading-[1.02] font-semibold tracking-[-0.03em] lg:text-[64px] lg:leading-[0.98]">

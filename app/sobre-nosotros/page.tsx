@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { Breadcrumb } from "@/components/site/breadcrumb";
 import { Container } from "@/components/site/container";
+import { LiveDot } from "@/components/site/live-dot";
 import { PhotoPlaceholder } from "@/components/site/photo-placeholder";
 import { Button } from "@/components/ui/button";
 
@@ -60,7 +61,8 @@ export default function SobreNosotrosPage() {
       {/* 1 · Apertura */}
       <Container className="pt-16 lg:pt-[120px]">
         <div className="max-w-[900px]">
-          <div className="font-mono text-[11.5px] tracking-[0.16em] text-accent">
+          <div className="flex items-center gap-2.5 font-mono text-[11.5px] tracking-[0.16em] text-muted-3">
+            <LiveDot />
             01 · POR QUÉ EXISTE BWS
           </div>
           <h1 className="mt-6 max-w-[860px] text-[40px] leading-[1.1] font-semibold tracking-[-0.03em] lg:text-[68px] lg:leading-[1.06] lg:tracking-[-0.04em]">
