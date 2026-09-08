@@ -5,6 +5,7 @@ import { ArrowRight } from "lucide-react";
 import { Breadcrumb } from "@/components/site/breadcrumb";
 import { Container } from "@/components/site/container";
 import { FloatingSlotsPanel } from "@/components/site/floating-slots-panel";
+import { LiveDot } from "@/components/site/live-dot";
 import { PackCard } from "@/components/site/pack-card";
 import { packs } from "@/lib/data/packs";
 
@@ -29,7 +30,8 @@ export default function PacksPage() {
 
       <Container className="pt-16 lg:pt-[100px]">
         <div className="max-w-[820px]">
-          <div className="font-mono text-[11.5px] tracking-[0.16em] text-accent">
+          <div className="flex items-center gap-2.5 font-mono text-[11.5px] tracking-[0.16em] text-muted-3">
+            <LiveDot />
             CATÁLOGO · 5 PACKS FÍSICOS
           </div>
           <h1 className="mt-6 text-[40px] leading-[1.1] font-semibold tracking-[-0.03em] lg:text-[62px] lg:leading-[1.05]">
