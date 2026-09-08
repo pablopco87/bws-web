@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import type { Group } from "three";
 import { useTheme } from "next-themes";
 
@@ -25,6 +25,11 @@ const CYCLE_MS = 7600;
 
 const ACCENT_DARK = "#4ade80";
 const ACCENT_LIGHT = "#17a354";
+
+/** Fraction of the canvas the whole model nudges down/right within the hero, requested after
+ *  the first pass looked slightly too high and too far left. */
+const FRAME_SHIFT_X = 0.08;
+const FRAME_SHIFT_Y = 0.06;
 
 const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 
@@ -66,12 +71,37 @@ export function HomeHero() {
       camera={{ position: [CENTER[0] + 210, CENTER[1] - 260, CENTER[2] + 60], up: [0, 0, 1], fov: 30 }}
     >
       <ambientLight intensity={1.4} />
+      <FrameShift />
       <Rig>
         <WireframePieceMesh piece={data[HEMBRA_KEY]} color={strokeColor} position={[0, 0, 0]} />
         <MachoPiece piece={data[MACHO_KEY]} color={strokeColor} />
       </Rig>
     </Canvas>
   );
+}
+
+/**
+ * Nudges the rendered frame down/right within the canvas via `setViewOffset` — a pure
+ * screen-space shift of the perspective frustum's principal point, not a change to camera
+ * position/angle or the model's own transform. Keeps the same "look at the joint" framing, just
+ * repositions where that framing lands inside the fixed hero canvas.
+ */
+function FrameShift() {
+  const { camera, size } = useThree();
+
+  useEffect(() => {
+    const cam = camera;
+    if (!("isPerspectiveCamera" in cam) || !cam.isPerspectiveCamera) return;
+    const w = size.width;
+    const h = size.height;
+    cam.setViewOffset(w, h, -FRAME_SHIFT_X * w, -FRAME_SHIFT_Y * h, w, h);
+    cam.updateProjectionMatrix();
+    return () => {
+      cam.clearViewOffset();
+    };
+  }, [camera, size]);
+
+  return null;
 }
 
 /**

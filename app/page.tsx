@@ -14,6 +14,7 @@ import { FloatingSlotsPanel } from "@/components/site/floating-slots-panel";
 import { HomeHero } from "@/components/site/home-hero-loader";
 import { LiveDot } from "@/components/site/live-dot";
 import { PackCard } from "@/components/site/pack-card";
+import { DraggableScrollRow } from "@/components/site/draggable-scroll-row";
 import { PhotoPlaceholder } from "@/components/site/photo-placeholder";
 import { blogEnabled } from "@/lib/site-config";
 import { packs } from "@/lib/data/packs";
@@ -225,7 +226,7 @@ export default function Home() {
                 <ArrowRight className="size-3.5 transition-transform duration-200 group-hover:translate-x-1" />
               </a>
             </div>
-            <div className="flex gap-4 overflow-x-auto pb-3">
+            <DraggableScrollRow className="flex gap-4 pb-3">
               {[
                 "CLIP · montaje en 40 s",
                 "FOTO · mesa de torneo",
@@ -236,9 +237,9 @@ export default function Home() {
                   <PhotoPlaceholder aspect="4/5" label="" caption={caption} />
                 </div>
               ))}
-            </div>
+            </DraggableScrollRow>
             <div className="mt-2 font-mono text-[11px] text-muted-3">
-              SCROLL LATERAL · CONTENIDO REAL DE REDES
+              ARRASTRA PARA VER MÁS · CONTENIDO REAL DE REDES
             </div>
           </div>
         </div>
