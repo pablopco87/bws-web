@@ -123,11 +123,15 @@ function FrameShift() {
  * translate CENTER to the origin, rotate there (so the pivot is the joint, not the STL files'
  * arbitrary coordinate origin), then translate back — the standard "rotate around an off-origin
  * pivot while keeping it fixed in world space" composition, matching where the camera looks.
+ *
+ * Yaw-only (rotation about the vertical Z axis) — no tilt/rotation.x. A tilt away from vertical
+ * reads as the model leaning/toppling, which undercuts the product's whole pitch ("ángulos de
+ * 90º estables"); staying upright and just turning in place reads as stable instead.
  */
 function Rig({ children }: { children: React.ReactNode }) {
   const rotator = useRef<Group>(null);
   const reducedMotion = useRef(false);
-  const st = useRef({ yaw: 0, tilt: 0, active: 0 });
+  const st = useRef({ yaw: 0, active: 0 });
 
   useEffect(() => {
     reducedMotion.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -142,12 +146,9 @@ function Rig({ children }: { children: React.ReactNode }) {
 
     const driftSpeed = reducedMotion.current ? 0 : 1;
     const mx = state.pointer.x * st.current.active;
-    const my = state.pointer.y * st.current.active;
     st.current.yaw += ((0.55 + (t / 14000) * driftSpeed + mx * 0.3) - st.current.yaw) * Math.min(1, delta * 3);
-    st.current.tilt += ((0.18 + Math.sin(t / 9000) * (reducedMotion.current ? 0 : 0.05) - my * 0.14) - st.current.tilt) * Math.min(1, delta * 3);
 
     g.rotation.z = st.current.yaw;
-    g.rotation.x = st.current.tilt;
   });
 
   return (
