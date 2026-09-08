@@ -29,13 +29,13 @@ const ACCENT_LIGHT = "#17a354";
 /** Fraction of the canvas the whole model nudges down/right within the hero, requested after
  *  the first pass looked slightly too high and too far left. */
 const FRAME_SHIFT_X = 0.08;
-const FRAME_SHIFT_Y = 0.18;
+const FRAME_SHIFT_Y = 0.22;
 
 /** Base camera offset from CENTER (mm), scaled up to move the camera proportionally farther
  *  away — for a fixed FOV, apparent size scales ~1/distance, so dividing by 0.85 here shrinks
  *  the model on screen by ~15%, as requested, without changing the viewing angle. */
 const CAMERA_BASE_OFFSET: [number, number, number] = [210, -260, 60];
-const CAMERA_DISTANCE_SCALE = 1 / 0.85;
+const CAMERA_DISTANCE_SCALE = 1 / 0.78;
 
 const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 
