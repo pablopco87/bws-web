@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -19,6 +20,7 @@ import { cn } from "@/lib/utils";
  */
 export function SiteHeader() {
   const pathname = usePathname();
+  const [packsOpen, setPacksOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-40 border-b border-border-divider bg-background/85 backdrop-blur-sm">
@@ -35,22 +37,46 @@ export function SiteHeader() {
         </Link>
 
         <div className="hidden items-center gap-[34px] text-sm text-muted lg:flex">
-          <div className="group">
+          <div
+            // Controlled via state rather than pure :hover/:focus-within — hovering a link and
+            // clicking it keeps the cursor over the panel, so group-hover alone never closed it
+            // until the mouse moved away. Closing explicitly on click is the standard mega-menu
+            // behavior: the panel should dismiss the moment you act on it, not linger under the
+            // pointer.
+            onMouseEnter={() => setPacksOpen(true)}
+            onMouseLeave={() => setPacksOpen(false)}
+            onFocus={() => setPacksOpen(true)}
+            onBlur={(e) => {
+              if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {
+                setPacksOpen(false);
+              }
+            }}
+          >
             <button
               type="button"
               aria-haspopup="true"
-              className="flex items-center gap-[7px] text-sm text-muted outline-none transition-colors duration-[180ms] group-hover:text-accent group-focus-within:text-accent"
+              aria-expanded={packsOpen}
+              className={cn(
+                "flex items-center gap-[7px] text-sm outline-none transition-colors duration-[180ms]",
+                packsOpen ? "text-accent" : "text-muted"
+              )}
             >
               Packs
-              <ChevronDown className="size-[9px] transition-transform duration-300 group-hover:rotate-180 group-focus-within:rotate-180" />
+              <ChevronDown
+                className={cn(
+                  "size-[9px] transition-transform duration-300",
+                  packsOpen && "rotate-180"
+                )}
+              />
             </button>
             <div
-              // Clicking a link inside navigates client-side, and SiteHeader isn't remounted by
-              // that navigation — so without this, the link keeps focus after the route change
-              // and group-focus-within (needed for keyboard users tabbing through the menu)
-              // keeps the panel open until an unrelated click steals focus away.
-              onClick={() => (document.activeElement as HTMLElement | null)?.blur?.()}
-              className="invisible absolute inset-x-[18px] top-full pt-3.5 opacity-0 transition-[opacity,visibility,transform] duration-200 [transform:translateY(-6px)] group-hover:visible group-hover:opacity-100 group-hover:[transform:translateY(0)] group-focus-within:visible group-focus-within:opacity-100 group-focus-within:[transform:translateY(0)] lg:inset-x-14"
+              onClick={() => setPacksOpen(false)}
+              className={cn(
+                "absolute inset-x-[18px] top-full pt-3.5 transition-[opacity,visibility,transform] duration-200 lg:inset-x-14",
+                packsOpen
+                  ? "visible opacity-100 [transform:translateY(0)]"
+                  : "invisible opacity-0 [transform:translateY(-6px)]"
+              )}
             >
               <PacksMegaMenu />
             </div>
