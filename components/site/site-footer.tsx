@@ -71,15 +71,20 @@ function FooterColumn({
   return (
     <div className="flex flex-col gap-3.5 text-sm text-muted">
       <div className="mb-1 font-mono text-[11px] tracking-[0.14em] text-muted-3">{title}</div>
-      {links.map((link) => (
-        <Link
-          key={link.href}
-          href={link.href}
-          className="transition-colors duration-[180ms] hover:text-accent"
-        >
-          {link.label}
-        </Link>
-      ))}
+      {links.map((link) => {
+        const isExternal = link.href.startsWith("http");
+        return (
+          <Link
+            key={link.href}
+            href={link.href}
+            target={isExternal ? "_blank" : undefined}
+            rel={isExternal ? "noopener noreferrer" : undefined}
+            className="transition-colors duration-[180ms] hover:text-accent"
+          >
+            {link.label}
+          </Link>
+        );
+      })}
     </div>
   );
 }

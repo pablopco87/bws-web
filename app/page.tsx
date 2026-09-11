@@ -219,7 +219,9 @@ export default function Home() {
                 DESDE LA COMUNIDAD
               </div>
               <a
-                href="https://instagram.com"
+                href="https://www.instagram.com/brutalworkstudio/"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="group inline-flex items-center gap-[7px] text-sm text-accent transition-colors duration-200 hover:text-link-hover"
               >
                 Ver en Instagram
