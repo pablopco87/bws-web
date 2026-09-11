@@ -15,7 +15,7 @@ export const footerLinks = {
   estudio: [
     { label: "Sobre nosotros", href: "/sobre-nosotros" },
     { label: "Contacto", href: "/contacto" },
-    { label: "Instagram", href: "https://instagram.com" },
+    { label: "Instagram", href: "https://www.instagram.com/brutalworkstudio/" },
     { label: "Blog", href: "/blog" },
   ],
   legal: [
@@ -24,7 +24,7 @@ export const footerLinks = {
     { label: "Cookies", href: "/legal/cookies" },
     { label: "Licencia de uso", href: "/legal/licencia-stl" },
     { label: "Términos y condiciones", href: "/legal/terminos-y-condiciones" },
-    { label: "Envíos y devoluciones", href: "/legal/envios" },
+    { label: "Envíos y devoluciones", href: "/legal/envios-y-devoluciones" },
     { label: "Contacto", href: "/contacto" },
   ],
 } as const;
