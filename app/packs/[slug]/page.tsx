@@ -252,7 +252,7 @@ export default async function PackPage({ params }: { params: Promise<{ slug: str
         </div>
       </Container>
 
-      <FloatingSlotsPanel packMode />
+      <FloatingSlotsPanel packMode pack={pack} />
     </>
   );
 }
