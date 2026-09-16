@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/sheet";
 import { LiveDot } from "@/components/site/live-dot";
 import { SlotDots } from "@/components/site/slot-dots";
-import { tandas, nextTanda } from "@/lib/data/slots";
+import { tandas, nextTanda, getPackAvailability } from "@/lib/data/slots";
 import { cn } from "@/lib/utils";
 import type { Pack } from "@/lib/data/packs";
 
@@ -81,6 +81,23 @@ function TandaRow({ tanda, dense = false }: { tanda: (typeof tandas)[number]; de
   );
 }
 
+/**
+ * Same 3-state copy as AvailabilityCTA (design/chats/chat2.md:83, "cta_states") — the floating
+ * panel's CTA has to coordinate with the page's own CTA per the closed brief
+ * (design/chats/chat2.md:58), not always claim "Reservar slot" regardless of this pack's actual
+ * availability.
+ */
+function reserveLabel(pack: Pack): string {
+  const availability = getPackAvailability(pack);
+  if (availability.status === "libre") {
+    return `Reservar slot · Tanda ${String(availability.tanda.number).padStart(2, "0")}`;
+  }
+  if (availability.status === "espera") {
+    return "Entrar en lista de espera";
+  }
+  return "Avisarme cuando abra";
+}
+
 function ReserveButton({ pack, className }: { pack?: Pack; className?: string }) {
   return (
     <Link
@@ -90,9 +107,7 @@ function ReserveButton({ pack, className }: { pack?: Pack; className?: string })
         className
       )}
     >
-      {pack
-        ? `Reservar slot · Tanda ${String(nextTanda.number).padStart(2, "0")}`
-        : "Elegir pack para reservar"}
+      {pack ? reserveLabel(pack) : "Elegir pack para reservar"}
     </Link>
   );
 }
@@ -171,24 +186,46 @@ function MobilePill() {
   );
 }
 
+/**
+ * Short state label for the mobile bar's tight CTA width — same 3 states as `reserveLabel`, just
+ * condensed (the full "Entrar en lista de espera" wording is the desktop/hero copy, closed in
+ * design/chats/chat2.md:83; this shorter phrasing for the mobile bar isn't itself closed anywhere,
+ * flagging it as my own call for the space constraint).
+ */
+function mobileReserveLabel(pack: Pack): string {
+  const availability = getPackAvailability(pack);
+  if (availability.status === "libre") return "Reservar slot";
+  if (availability.status === "espera") return "Lista de espera";
+  return "Avisarme";
+}
+
 /** <1024px, pack-detail pages only: fixed bottom bar, no pill/sheet — detail's on the page. */
 function MobileBar({ pack }: { pack?: Pack }) {
+  const availability = pack ? getPackAvailability(pack) : null;
+  const tandaNumber = availability?.tanda ? availability.tanda.number : nextTanda.number;
+
   return (
     <div className="fixed inset-x-0 bottom-0 z-30 flex items-center gap-3 border-t border-border-panel bg-surface-panel px-4 py-3 shadow-panel backdrop-blur-[10px] lg:hidden">
       <div className="flex-1">
         <div className="flex items-center gap-2 font-mono text-[10px] tracking-[0.12em] text-muted">
           <LiveDot />
-          TANDA {String(nextTanda.number).padStart(2, "0")}
+          {availability?.tanda
+            ? `TANDA ${String(tandaNumber).padStart(2, "0")}`
+            : "SIN TANDA ABIERTA"}
         </div>
         <div className="mt-1 font-mono text-[11.5px] text-accent">
-          {nextTanda.freeHalfSlots} {nextTanda.freeHalfSlots === 1 ? "SLOT LIBRE" : "SLOTS LIBRES"}
+          {!availability &&
+            `${nextTanda.freeHalfSlots} ${nextTanda.freeHalfSlots === 1 ? "SLOT LIBRE" : "SLOTS LIBRES"}`}
+          {availability?.status === "libre" && "SLOT DISPONIBLE"}
+          {availability?.status === "espera" && "TANDA COMPLETA · EN COLA"}
+          {availability?.status === "cerrado" && "SIN SLOTS ESTE MES"}
         </div>
       </div>
       <Link
         href={pack ? `/reserva/${pack.slug}` : "/packs"}
         className="flex h-12 shrink-0 items-center justify-center bg-accent px-5 text-sm font-semibold text-on-accent transition-colors hover:bg-accent-hover"
       >
-        {pack ? "Reservar slot" : "Elegir pack"}
+        {pack ? mobileReserveLabel(pack) : "Elegir pack"}
       </Link>
     </div>
   );
