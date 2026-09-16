@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/sheet";
 import { LiveDot } from "@/components/site/live-dot";
 import { SlotDots } from "@/components/site/slot-dots";
-import { tandas, nextTanda, getPackAvailability } from "@/lib/data/slots";
+import { tandas, nextTanda, getPackAvailability, formatFreeSlots } from "@/lib/data/slots";
 import { cn } from "@/lib/utils";
 import type { Pack } from "@/lib/data/packs";
 
@@ -74,7 +74,7 @@ function TandaRow({ tanda, dense = false }: { tanda: (typeof tandas)[number]; de
         {live ? "PRÓXIMA ENTREGA" : "LISTA DE ESPERA"}
       </span>
       <span className={cn("font-mono text-[11.5px]", live ? "text-muted" : "text-muted-2")}>
-        {tanda.freeHalfSlots} {tanda.freeHalfSlots === 1 ? "libre" : "libres"}
+        {formatFreeSlots(tanda.freeHalfSlots)}
       </span>
       <SlotDots tanda={tanda} />
     </div>
@@ -120,7 +120,7 @@ function DesktopPanel({ pack }: { pack?: Pack }) {
     <Collapsible
       open={open}
       onOpenChange={setOpen}
-      className="fixed right-8 bottom-8 z-30 hidden w-[372px] border border-border-panel bg-surface-panel shadow-panel backdrop-blur-[10px] lg:block"
+      className="fixed right-8 bottom-8 z-30 hidden w-[400px] border border-border-panel bg-surface-panel shadow-panel backdrop-blur-[10px] lg:block"
     >
       <div className="flex items-center justify-between border-b border-border-hairline px-3.5 py-3">
         <div className="flex items-center gap-[9px] font-mono text-[11px] tracking-[0.14em] text-muted">
@@ -160,8 +160,8 @@ function MobilePill() {
         >
           <LiveDot />
           <span className="font-mono text-[11px] tracking-[0.1em] text-foreground">
-            TANDA {String(nextTanda.number).padStart(2, "0")} · {nextTanda.freeHalfSlots}{" "}
-            {nextTanda.freeHalfSlots === 1 ? "LIBRE" : "LIBRES"}
+            TANDA {String(nextTanda.number).padStart(2, "0")} ·{" "}
+            {formatFreeSlots(nextTanda.freeHalfSlots).toUpperCase()}
           </span>
           <ChevronDown className="size-3.5 rotate-180 text-muted-2" />
         </button>
@@ -214,8 +214,7 @@ function MobileBar({ pack }: { pack?: Pack }) {
             : "SIN TANDA ABIERTA"}
         </div>
         <div className="mt-1 font-mono text-[11.5px] text-accent">
-          {!availability &&
-            `${nextTanda.freeHalfSlots} ${nextTanda.freeHalfSlots === 1 ? "SLOT LIBRE" : "SLOTS LIBRES"}`}
+          {!availability && formatFreeSlots(nextTanda.freeHalfSlots).toUpperCase()}
           {availability?.status === "libre" && "SLOT DISPONIBLE"}
           {availability?.status === "espera" && "TANDA COMPLETA · EN COLA"}
           {availability?.status === "cerrado" && "SIN SLOTS ESTE MES"}

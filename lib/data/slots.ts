@@ -26,6 +26,20 @@ export const tandas: Tanda[] = [
 
 export const nextTanda = tandas.find((t) => t.status === "next") ?? tandas[0];
 
+/**
+ * Half-slot units are the internal capacity granularity, not what people should read — "3 libres"
+ * means nothing to a visitor. Converts back to whole/half slots for display: "2 libres" (1 slot =
+ * 1 unit), "1 libre", "1 y 1/2 libres", "1/2 libre".
+ */
+export function formatFreeSlots(freeHalfSlots: number): string {
+  const wholeSlots = Math.floor(freeHalfSlots / 2);
+  const hasHalf = freeHalfSlots % 2 === 1;
+
+  if (wholeSlots === 0) return hasHalf ? "1/2 libre" : "0 libres";
+  if (!hasHalf) return `${wholeSlots} ${wholeSlots === 1 ? "libre" : "libres"}`;
+  return `${wholeSlots} y 1/2 libres`;
+}
+
 const HALF_SLOTS_PER_PACK: Record<Pack["slotCost"], number> = { full: 2, half: 1 };
 
 export type PackAvailabilityStatus = "libre" | "espera" | "cerrado";
