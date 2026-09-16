@@ -20,6 +20,7 @@ import { LiveDot } from "@/components/site/live-dot";
 import { SlotDots } from "@/components/site/slot-dots";
 import { tandas, nextTanda } from "@/lib/data/slots";
 import { cn } from "@/lib/utils";
+import type { Pack } from "@/lib/data/packs";
 
 interface FloatingSlotsPanelProps {
   /**
@@ -28,14 +29,21 @@ interface FloatingSlotsPanelProps {
    * lives on the page. Everywhere else this stays false. Desktop is unaffected either way.
    */
   packMode?: boolean;
+  /**
+   * The pack in context, when there is one (product pages). Without it — Home, /packs, /stl,
+   * /slider-system, /faq, legal pages — the "Reservar slot" CTA can't know which pack to send
+   * someone to reserve, and the mock never closed an on-form pack picker, so it links to /packs
+   * to choose first instead.
+   */
+  pack?: Pack;
   className?: string;
 }
 
-export function FloatingSlotsPanel({ packMode = false, className }: FloatingSlotsPanelProps) {
+export function FloatingSlotsPanel({ packMode = false, pack, className }: FloatingSlotsPanelProps) {
   return (
     <div className={className}>
-      <DesktopPanel />
-      {packMode ? <MobileBar /> : <MobilePill />}
+      <DesktopPanel pack={pack} />
+      {packMode ? <MobileBar pack={pack} /> : <MobilePill />}
     </div>
   );
 }
@@ -73,22 +81,24 @@ function TandaRow({ tanda, dense = false }: { tanda: (typeof tandas)[number]; de
   );
 }
 
-function ReserveButton({ className }: { className?: string }) {
+function ReserveButton({ pack, className }: { pack?: Pack; className?: string }) {
   return (
     <Link
-      href="/checkout/reserva"
+      href={pack ? `/reserva/${pack.slug}` : "/packs"}
       className={cn(
         "flex h-12 items-center justify-center bg-accent text-sm font-semibold text-on-accent transition-colors hover:bg-accent-hover",
         className
       )}
     >
-      Reservar slot · Tanda {String(nextTanda.number).padStart(2, "0")}
+      {pack
+        ? `Reservar slot · Tanda ${String(nextTanda.number).padStart(2, "0")}`
+        : "Elegir pack para reservar"}
     </Link>
   );
 }
 
 /** ≥1024px: fixed panel, bottom-right, defaults open, collapsible to a small pill. */
-function DesktopPanel() {
+function DesktopPanel({ pack }: { pack?: Pack }) {
   const [open, setOpen] = React.useState(true);
 
   return (
@@ -118,7 +128,7 @@ function DesktopPanel() {
             <TandaRow key={tanda.number} tanda={tanda} />
           ))}
         </div>
-        <ReserveButton className="h-12 w-full" />
+        <ReserveButton pack={pack} className="h-12 w-full" />
       </CollapsibleContent>
     </Collapsible>
   );
@@ -162,7 +172,7 @@ function MobilePill() {
 }
 
 /** <1024px, pack-detail pages only: fixed bottom bar, no pill/sheet — detail's on the page. */
-function MobileBar() {
+function MobileBar({ pack }: { pack?: Pack }) {
   return (
     <div className="fixed inset-x-0 bottom-0 z-30 flex items-center gap-3 border-t border-border-panel bg-surface-panel px-4 py-3 shadow-panel backdrop-blur-[10px] lg:hidden">
       <div className="flex-1">
@@ -175,10 +185,10 @@ function MobileBar() {
         </div>
       </div>
       <Link
-        href="/checkout/reserva"
+        href={pack ? `/reserva/${pack.slug}` : "/packs"}
         className="flex h-12 shrink-0 items-center justify-center bg-accent px-5 text-sm font-semibold text-on-accent transition-colors hover:bg-accent-hover"
       >
-        Reservar slot
+        {pack ? "Reservar slot" : "Elegir pack"}
       </Link>
     </div>
   );

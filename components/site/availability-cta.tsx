@@ -18,11 +18,11 @@ export function AvailabilityCTA({ pack, className }: { pack: Pack; className?: s
     <div className={className}>
       {status === "cerrado" ? (
         <Button asChild variant="primary">
-          <Link href="/checkout/reserva">Avisarme cuando abra</Link>
+          <Link href={`/reserva/${pack.slug}`}>Avisarme cuando abra</Link>
         </Button>
       ) : (
         <Button asChild variant="solid">
-          <Link href="/checkout/reserva">
+          <Link href={`/reserva/${pack.slug}`}>
             {status === "libre"
               ? `Reservar slot · Tanda ${String(availability.tanda.number).padStart(2, "0")}`
               : "Entrar en lista de espera"}
