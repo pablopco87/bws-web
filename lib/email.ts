@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import type { CreateEmailOptions } from "resend";
 
 import type { Pack } from "@/lib/data/packs";
 import type { PackAvailability } from "@/lib/data/slots";
@@ -19,6 +20,25 @@ function getResend(): Resend {
 
 const FROM = "Brutal Work Studio <reservas@brutalworkstudio.com>";
 const INTERNAL_TO = "contacto@brutalworkstudio.com";
+
+/**
+ * `resend.emails.send()` does NOT throw for application-level failures (unverified recipient
+ * under sandbox restrictions, unverified domain, invalid address...) — it resolves successfully
+ * with `{ data: null, error: {...} }`. Both functions below used to await the call directly and
+ * ignore `.error`, so a failed send looked exactly like success from actions.ts's point of view:
+ * this is why the "reserva confirmada" UI could show up for a customer whose confirmation email
+ * Resend actually rejected — the failure never became a thrown error for the existing try/catch
+ * in app/reserva/actions.ts to catch. Every send goes through this now so a real failure always
+ * surfaces there instead of being swallowed here.
+ */
+async function sendOrThrow(payload: CreateEmailOptions) {
+  const result = await getResend().emails.send(payload);
+  if (result.error) {
+    throw new Error(`Resend: ${result.error.name} — ${result.error.message}`);
+  }
+  console.log(`Resend: enviado a ${String(payload.to)} (id ${result.data?.id})`);
+  return result.data;
+}
 
 export interface ReservationContact {
   nombre: string;
@@ -55,7 +75,7 @@ export async function sendReservationNotice(pack: Pack, availability: PackAvaila
     .filter(Boolean)
     .join(", ");
 
-  return getResend().emails.send({
+  return sendOrThrow({
     from: FROM,
     to: INTERNAL_TO,
     replyTo: contact.email,
@@ -80,7 +100,7 @@ export async function sendReservationNotice(pack: Pack, availability: PackAvaila
  * haya salido con éxito.
  */
 export async function sendReservationConfirmation(pack: Pack, contact: ReservationContact) {
-  return getResend().emails.send({
+  return sendOrThrow({
     from: FROM,
     to: contact.email,
     subject: "Reserva confirmada · Brutal Work Studio",
