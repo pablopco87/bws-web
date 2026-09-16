@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef } from "react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -48,6 +48,19 @@ export function ReservaForm({ pack, availability }: { pack: Pack; availability: 
     initialState
   );
 
+  /**
+   * `isPending` solo bloquea el botón después de que React re-renderice y confirme el `disabled`
+   * en el DOM — no es una guarda síncrona. Un Enter + clic casi simultáneos (u otro doble evento
+   * de submit nativo en el mismo tick) pueden disparar `formAction` dos veces antes de ese
+   * re-render, duplicando los dos emails reales que envía la Server Action. Este ref se marca en
+   * el evento `submit` nativo, sin esperar a ningún render, y bloquea cualquier segundo submit
+   * hasta que la acción termine (éxito o error).
+   */
+  const submittingRef = useRef(false);
+  useEffect(() => {
+    if (!isPending) submittingRef.current = false;
+  }, [isPending]);
+
   if (state?.ok) {
     return <ReservaConfirmada pack={pack} />;
   }
@@ -69,7 +82,17 @@ export function ReservaForm({ pack, availability }: { pack: Pack; availability: 
       </div>
       <p className="mt-6 max-w-xl text-lg leading-[1.6] text-muted">{copy.lead}</p>
 
-      <form action={formAction} className="mt-12 border border-border-hairline p-8 lg:p-9">
+      <form
+        action={formAction}
+        onSubmit={(e) => {
+          if (submittingRef.current) {
+            e.preventDefault();
+            return;
+          }
+          submittingRef.current = true;
+        }}
+        className="mt-12 border border-border-hairline p-8 lg:p-9"
+      >
         {/* Honeypot — oculto para personas, un bot que rellena todos los campos del DOM cae aquí. */}
         <div className="absolute -top-[9999px] -left-[9999px]" aria-hidden="true">
           <label>
