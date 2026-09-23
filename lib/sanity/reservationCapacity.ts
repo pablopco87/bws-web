@@ -38,15 +38,26 @@ interface QuincenaCandidate {
   capacidadConsumida: number;
 }
 
-function costFor(pack: Pick<Pack, "slotCost">): number {
+/** Coste en unidades de capacidad (no euros — ver senalImporte() en lib/email.ts para el importe
+ * de la señal, que reparte por el mismo slotCost pero mide otra cosa y puede divergir). */
+export function costFor(pack: Pick<Pack, "slotCost">): number {
   return pack.slotCost === "full" ? 1 : 0.5;
 }
 
 /** Fecha de hoy en huso de España, no UTC — evita el desfase de 1-2h tras medianoche en que
  * `new Date().toISOString()` todavía reporta el día UTC anterior, lo que haría el filtro
  * `fechaFin >= $today` más permisivo de lo debido durante esa ventana. */
-function todayInMadrid(): string {
+export function todayInMadrid(): string {
   return new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Madrid" }).format(new Date());
+}
+
+/** Fecha (huso de España) a `days` días desde hoy — para fijar los plazos de 5 días de señal y
+ * resto en app/api/cron/reservas/route.ts. */
+export function deadlineInMadrid(days: number): string {
+  const [y, m, d] = todayInMadrid().split("-").map(Number);
+  const base = new Date(Date.UTC(y, m - 1, d));
+  base.setUTCDate(base.getUTCDate() + days);
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Madrid" }).format(base);
 }
 
 /**
@@ -54,7 +65,7 @@ function todayInMadrid(): string {
  * intentos fallan, la desviación queda permanente y silenciosa salvo por este log — no hay ningún
  * job de reconciliación en el proyecto que la corrija sola; requiere revisión manual en Studio.
  */
-async function compensate(
+export async function compensate(
   client: SanityClient,
   quincenaId: string,
   cost: number,
@@ -171,7 +182,7 @@ export async function reservarCapacidad(
         _type: "reserva",
         pack: pack.slug,
         quincena: { _type: "reference", _ref: quincenaId },
-        estado: "confirmada",
+        estado: "reservada",
         nombre: contact.nombre,
         email: contact.email,
         telefono: contact.telefono,
