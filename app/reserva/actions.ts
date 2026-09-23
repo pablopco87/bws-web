@@ -4,6 +4,7 @@ import { packs } from "@/lib/data/packs";
 import { getPackAvailability } from "@/lib/data/slots";
 import { sendReservationConfirmation, sendReservationNotice } from "@/lib/email";
 import type { ReservationContact } from "@/lib/email";
+import { reservarCapacidad } from "@/lib/sanity/reservationCapacity";
 
 export type ReservaResult =
   | { ok: true }
@@ -85,6 +86,20 @@ export async function reservar(slug: string, formData: FormData): Promise<Reserv
       message:
         "Hemos recibido tu reserva, pero no hemos podido enviarte el email de confirmación. Te contactaremos igualmente — no hace falta que vuelvas a enviar el formulario.",
     };
+  }
+
+  // Ambos emails han salido — la reserva ya es real para el cliente y para Pablo (tiene el aviso
+  // interno). Lo que sigue es contabilidad en Sanity, best-effort: si falla, no se convierte en
+  // error de cara al cliente (ya recibió una confirmación real; decirle ahora que ha fallado
+  // contradiría ese email y podría provocar un reenvío confuso) — solo se registra en los logs
+  // del servidor, con contexto identificable, para poder corregirlo a mano si hace falta.
+  try {
+    await reservarCapacidad(pack, contact);
+  } catch (err) {
+    console.error(
+      `reservar: fallo registrando capacidad en Sanity — pack=${pack.slug} email=${contact.email} fecha=${new Date().toISOString()}`,
+      err
+    );
   }
 
   return { ok: true };
