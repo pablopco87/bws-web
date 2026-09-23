@@ -38,8 +38,51 @@ interface ReservaDoc {
   quincena: { _id: string };
 }
 
+/** Proyección de processExpirados — no necesita nombre/email, a diferencia de ReservaDoc. */
+interface ReservaExpirada {
+  _id: string;
+  _rev: string;
+  pack: string;
+  estado: string;
+  quincena: { _id: string };
+}
+
+const REVERT_ATTEMPTS = 2;
+
 function packOf(slug: string): Pack | undefined {
   return packs.find((p) => p.slug === slug);
+}
+
+/**
+ * Revierte un avance de estado cuando el email correspondiente ha fallado, con un reintento antes
+ * de rendirse (mismo patrón que compensate() en reservationCapacity.ts). Si los dos intentos
+ * fallan, el documento queda con un plazo de 5 días corriendo sobre un email que el cliente nunca
+ * recibió, y processExpirados lo cancelaría igualmente cuando venza — riesgo real pero acotado
+ * (requiere que fallen el envío Y las dos reversiones seguidas), documentado aquí en vez de
+ * construir un mecanismo de confirmación de entrega aparte para un caso de esta probabilidad.
+ */
+async function revertirEstado(
+  client: SanityClient,
+  docId: string,
+  estadoAnterior: string,
+  campoFecha: "senalFechaLimite" | "restoFechaLimite"
+): Promise<void> {
+  for (let attempt = 1; attempt <= REVERT_ATTEMPTS; attempt++) {
+    try {
+      await client.patch(docId).unset([campoFecha]).set({ estado: estadoAnterior }).commit();
+      return;
+    } catch (err) {
+      console.error(
+        `revertirEstado: intento ${attempt}/${REVERT_ATTEMPTS} fallido para ${docId} (→ ${estadoAnterior})`,
+        err
+      );
+    }
+  }
+  console.error(
+    `revertirEstado: ${docId} queda SIN revertir tras ${REVERT_ATTEMPTS} intentos — el cliente no ` +
+      `recibió el email pero el plazo de 5 días sigue corriendo; requiere corrección manual en ` +
+      `Studio antes de que processExpirados lo cancele sin que nadie haya sido avisado.`
+  );
 }
 
 /**
@@ -81,15 +124,7 @@ async function processSenalDue(client: SanityClient, today: string): Promise<voi
       await sendSenal(pack, { nombre: doc.nombre, email: doc.email });
     } catch (err) {
       console.error(`cron/reservas: fallo enviando email de señal para ${doc._id} — revirtiendo estado`, err);
-      try {
-        await client.patch(doc._id).unset(["senalFechaLimite"]).set({ estado: "reservada" }).commit();
-      } catch (revertErr) {
-        console.error(
-          `cron/reservas: fallo revirtiendo ${doc._id} a "reservada" tras error de email — ` +
-            `queda en señal-solicitada SIN que el cliente haya recibido el aviso, revisión manual necesaria`,
-          revertErr
-        );
-      }
+      await revertirEstado(client, doc._id, "reservada", "senalFechaLimite");
     }
   }
 }
@@ -137,15 +172,7 @@ async function processFabricadas(client: SanityClient): Promise<void> {
       await sendResto(pack, { nombre: doc.nombre, email: doc.email }, doc.restoAPagar);
     } catch (err) {
       console.error(`cron/reservas: fallo enviando email del resto para ${doc._id} — revirtiendo estado`, err);
-      try {
-        await client.patch(doc._id).unset(["restoFechaLimite"]).set({ estado: "fabricada" }).commit();
-      } catch (revertErr) {
-        console.error(
-          `cron/reservas: fallo revirtiendo ${doc._id} a "fabricada" tras error de email — ` +
-            `queda en resto-solicitado SIN que el cliente haya recibido el aviso, revisión manual necesaria`,
-          revertErr
-        );
-      }
+      await revertirEstado(client, doc._id, "fabricada", "restoFechaLimite");
     }
   }
 }
@@ -158,7 +185,7 @@ async function processFabricadas(client: SanityClient): Promise<void> {
  * ya aceptado de "capacidad fantasma" que documenta compensate()).
  */
 async function processExpirados(client: SanityClient, today: string): Promise<void> {
-  const docs = await client.fetch<ReservaDoc[]>(
+  const docs = await client.fetch<ReservaExpirada[]>(
     `*[_type == "reserva" && (
         (estado == "senal-solicitada" && senalFechaLimite < $today) ||
         (estado == "resto-solicitado" && restoFechaLimite < $today)

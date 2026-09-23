@@ -16,9 +16,9 @@ import type { ReservationContact } from "@/lib/email";
  * trip (commit({returnDocuments:true})) y, si se pasó, se compensa con dec() y se reintenta
  * contra la siguiente candidata.
  *
- * Fuera de alcance, a propósito: no hay cancelación aquí. El campo `estado: "cancelada"` del
- * schema reserva existe para una tarea futura que revierta capacidadConsumida — ese código no
- * existe todavía, esto NO lo cubre.
+ * La cancelación por impago (que sí revierte capacidadConsumida) vive en
+ * app/api/cron/reservas/route.ts, reutilizando `compensate` exportado desde aquí — no está
+ * duplicada, este archivo solo expone la pieza atómica que ese cron reutiliza.
  */
 
 const MAX_ATTEMPTS = 3;
