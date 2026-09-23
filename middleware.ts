@@ -45,6 +45,12 @@ export function middleware(request: NextRequest) {
   });
 }
 
+/**
+ * /studio (Sanity Studio) is excluded — it has its own real authentication (a Sanity account
+ * login), and stacking the Basic Auth prompt in front of it is confusing, not additional
+ * security. The lookahead needs `studio(?:/.*)?$`, not a bare `studio` — a bare alternative would
+ * do prefix matching and silently also exclude an unrelated future path like `/studio-tour`.
+ */
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|studio(?:/.*)?$).*)"],
 };
