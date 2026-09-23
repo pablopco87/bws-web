@@ -1,5 +1,7 @@
 import { randomUUID } from "node:crypto";
 
+import type { SanityClient } from "@sanity/client";
+
 import { getWriteClient } from "@/lib/sanity/writeClient";
 import type { Pack } from "@/lib/data/packs";
 import type { ReservationContact } from "@/lib/email";
@@ -21,6 +23,7 @@ import type { ReservationContact } from "@/lib/email";
 
 const MAX_ATTEMPTS = 3;
 const CANDIDATE_LIMIT = 10;
+const COMPENSATE_ATTEMPTS = 2;
 
 export class SinCapacidadError extends Error {
   constructor() {
@@ -39,6 +42,42 @@ function costFor(pack: Pick<Pack, "slotCost">): number {
   return pack.slotCost === "full" ? 1 : 0.5;
 }
 
+/** Fecha de hoy en huso de España, no UTC — evita el desfase de 1-2h tras medianoche en que
+ * `new Date().toISOString()` todavía reporta el día UTC anterior, lo que haría el filtro
+ * `fechaFin >= $today` más permisivo de lo debido durante esa ventana. */
+function todayInMadrid(): string {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Madrid" }).format(new Date());
+}
+
+/**
+ * Intenta revertir un .inc() ya aplicado, con un reintento antes de rendirse. Si los dos
+ * intentos fallan, la desviación queda permanente y silenciosa salvo por este log — no hay ningún
+ * job de reconciliación en el proyecto que la corrija sola; requiere revisión manual en Studio.
+ */
+async function compensate(
+  client: SanityClient,
+  quincenaId: string,
+  cost: number,
+  context: string
+): Promise<void> {
+  for (let attempt = 1; attempt <= COMPENSATE_ATTEMPTS; attempt++) {
+    try {
+      await client.patch(quincenaId).dec({ capacidadConsumida: cost }).commit();
+      return;
+    } catch (err) {
+      console.error(
+        `compensate: intento ${attempt}/${COMPENSATE_ATTEMPTS} fallido para ${quincenaId} (${context})`,
+        err
+      );
+    }
+  }
+  console.error(
+    `compensate: capacidadConsumida de ${quincenaId} queda potencialmente incorrecta tras ` +
+      `${COMPENSATE_ATTEMPTS} intentos fallidos de compensar (${context}) — requiere corrección ` +
+      `manual en Studio.`
+  );
+}
+
 /**
  * Reclama capacidad de forma segura en UNA quincena y devuelve su _id. Máximo 3 intentos REALES
  * (llamadas .inc() de verdad) — una candidata descartada de antemano por su propio snapshot, sin
@@ -51,7 +90,7 @@ function costFor(pack: Pick<Pack, "slotCost">): number {
  */
 async function claimQuincena(cost: number): Promise<string> {
   const client = getWriteClient();
-  const today = new Date().toISOString().slice(0, 10);
+  const today = todayInMadrid();
 
   const candidates = await client.fetch<QuincenaCandidate[]>(
     `*[_type == "slotQuincena" && fechaFin >= $today] | order(fechaInicio asc) [0...$limit] {
@@ -75,8 +114,13 @@ async function claimQuincena(cost: number): Promise<string> {
         .inc({ capacidadConsumida: cost })
         .commit<QuincenaCandidate>({ returnDocuments: true });
     } catch (err) {
-      // El commit ha fallado del todo (red, permisos...) — no se ha aplicado nada, no hay que
-      // compensar. Se pasa a la siguiente candidata.
+      // El commit ha lanzado una excepción — lo más probable es que no se haya aplicado nada
+      // (red caída, permisos...), pero no hay garantía absoluta: un commit es un POST no
+      // idempotente, y un timeout justo después de que el servidor aplicara la mutación pero
+      // antes de que la respuesta llegara al cliente produciría el mismo error aquí sin que el
+      // incremento se haya revertido. Riesgo aceptado, de menor probabilidad que el caso de
+      // sobrepaso detectado más abajo (que sí se compensa) — no se añade una relectura extra por
+      // cada intento fallido para confirmarlo, dado el volumen de este negocio.
       console.error(`claimQuincena: fallo en commit sobre ${quincena._id}`, err);
       continue;
     }
@@ -87,14 +131,7 @@ async function claimQuincena(cost: number): Promise<string> {
 
     // Sobrepasado por una carrera contra otra petición concurrente: deshacer y pasar a la
     // siguiente candidata (no reintentar la misma — ya sabemos que está llena).
-    try {
-      await client.patch(quincena._id).dec({ capacidadConsumida: cost }).commit();
-    } catch (err) {
-      console.error(
-        `claimQuincena: fallo compensando ${quincena._id} tras sobrepasar capacidad`,
-        err
-      );
-    }
+    await compensate(client, quincena._id, cost, "sobrepaso detectado en claimQuincena");
   }
 
   throw new SinCapacidadError();
@@ -111,6 +148,11 @@ export interface ReservarCapacidadResult {
  * transacción (fase 2), crea el documento `reserva` y añade su referencia a
  * slotQuincena.reservas — o pasan las dos cosas juntas, o ninguna: nunca un reserva huérfano sin
  * backlink.
+ *
+ * Si la transacción de fase 2 falla DESPUÉS de que fase 1 ya reclamó capacidad, esa capacidad
+ * quedaría consumida sin ningún reserva ni backlink que lo explique — peor que un huérfano, es
+ * capacidad fantasma. Por eso aquí sí se compensa explícitamente (a diferencia de dejarlo solo en
+ * manos del log) antes de relanzar el error hacia actions.ts.
  */
 export async function reservarCapacidad(
   pack: Pack,
@@ -121,31 +163,41 @@ export async function reservarCapacidad(
   const quincenaId = await claimQuincena(cost);
   const reservaId = `reserva.${randomUUID()}`;
 
-  await client
-    .transaction()
-    .create({
-      _id: reservaId,
-      _type: "reserva",
-      pack: pack.slug,
-      quincena: { _type: "reference", _ref: quincenaId },
-      estado: "confirmada",
-      nombre: contact.nombre,
-      email: contact.email,
-      telefono: contact.telefono,
-      direccion: contact.direccion,
-      pisoPuerta: contact.pisoPuerta || undefined,
-      ciudad: contact.ciudad,
-      codigoPostal: contact.codigoPostal,
-      provincia: contact.provincia,
-    })
-    .patch(quincenaId, (p) =>
-      p
-        .setIfMissing({ reservas: [] })
-        .insert("after", "reservas[-1]", [
-          { _type: "reference", _ref: reservaId, _key: randomUUID() },
-        ])
-    )
-    .commit();
+  try {
+    await client
+      .transaction()
+      .create({
+        _id: reservaId,
+        _type: "reserva",
+        pack: pack.slug,
+        quincena: { _type: "reference", _ref: quincenaId },
+        estado: "confirmada",
+        nombre: contact.nombre,
+        email: contact.email,
+        telefono: contact.telefono,
+        direccion: contact.direccion,
+        pisoPuerta: contact.pisoPuerta || undefined,
+        ciudad: contact.ciudad,
+        codigoPostal: contact.codigoPostal,
+        provincia: contact.provincia,
+      })
+      .patch(quincenaId, (p) =>
+        p
+          .setIfMissing({ reservas: [] })
+          .insert("after", "reservas[-1]", [
+            { _type: "reference", _ref: reservaId, _key: randomUUID() },
+          ])
+      )
+      .commit();
+  } catch (err) {
+    console.error(
+      `reservarCapacidad: fallo creando reserva/backlink tras reclamar capacidad — ` +
+        `quincenaId=${quincenaId} reservaId=${reservaId} pack=${pack.slug} email=${contact.email}`,
+      err
+    );
+    await compensate(client, quincenaId, cost, "fallo de transaction en reservarCapacidad");
+    throw err;
+  }
 
   return { quincenaId, reservaId };
 }
