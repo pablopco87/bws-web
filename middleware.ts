@@ -50,7 +50,14 @@ export function middleware(request: NextRequest) {
  * login), and stacking the Basic Auth prompt in front of it is confusing, not additional
  * security. The lookahead needs `studio(?:/.*)?$`, not a bare `studio` — a bare alternative would
  * do prefix matching and silently also exclude an unrelated future path like `/studio-tour`.
+ *
+ * /api/cron is excluded the same way — Vercel Cron invocations don't send this site's Basic Auth
+ * header, only `Authorization: Bearer <CRON_SECRET>` (checked by the route itself). Scoped to
+ * `api/cron` specifically, not all of `/api`, so any future non-cron API route stays behind the
+ * password gate by default unless deliberately widened.
  */
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|studio(?:/.*)?$).*)"],
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|studio(?:/.*)?$|api/cron(?:/.*)?$).*)",
+  ],
 };
