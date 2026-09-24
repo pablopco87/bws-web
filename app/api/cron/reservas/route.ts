@@ -14,7 +14,7 @@ import {
 import { getWriteClient } from "@/lib/sanity/writeClient";
 
 /**
- * Único cron del proyecto. Recorre tres lotes de `reserva` una vez al día (ver vercel.json) y
+ * Único cron del proyecto. Recorre cuatro lotes de `reserva` una vez al día (ver vercel.json) y
  * hace avanzar el estado de cada una — ver sanity/schemaTypes/reserva.ts para el grafo completo.
  * Node runtime obligatorio: reservationCapacity.ts importa node:crypto a nivel de módulo, algo
  * que Edge no soporta de forma fiable con @sanity/client.
@@ -44,6 +44,14 @@ interface ReservaExpirada {
   _rev: string;
   pack: string;
   estado: string;
+  quincena: { _id: string };
+}
+
+/** Proyección de processLiberacionesPendientes — no necesita `estado` (el filtro ya lo fija). */
+interface ReservaCancelada {
+  _id: string;
+  _rev: string;
+  pack: string;
   quincena: { _id: string };
 }
 
@@ -203,13 +211,70 @@ async function processExpirados(client: SanityClient, today: string): Promise<vo
       doc.estado === "senal-solicitada" ? "cancelada-impago-senal" : "cancelada-impago-resto";
 
     try {
-      await client.patch(doc._id).ifRevisionId(doc._rev).set({ estado: nuevoEstado }).commit();
+      await client
+        .patch(doc._id)
+        .ifRevisionId(doc._rev)
+        // capacidadLiberada va en el MISMO set() que estado, nunca en un segundo commit separado:
+        // si se partiera en dos escrituras, se abriría una ventana entre ambas en la que una
+        // invocación concurrente de processLiberacionesPendientes podría reclamar y liberar esta
+        // misma reserva en paralelo al compensate() de aquí abajo — doble liberación. Con la
+        // escritura atómica conjunta, en el instante en que el documento se vuelve visible para el
+        // filtro de ese lote, capacidadLiberada ya es true — nunca hay ventana.
+        .set({ estado: nuevoEstado, capacidadLiberada: true })
+        .commit();
     } catch (err) {
       console.error(`cron/reservas: fallo cancelando ${doc._id}`, err);
       continue;
     }
 
     await compensate(client, doc.quincena._id, costFor(pack), `cron: ${nuevoEstado} en ${doc._id}`);
+  }
+}
+
+/**
+ * Lote D — catch-all de liberación de capacidad. No le importa CÓMO ni POR QUÉ una reserva llegó
+ * a un estado cancelado — impago vía processExpirados, o "Cancelada — manual" puesta a mano en
+ * Studio por cualquier motivo (petición del cliente, error al reservar) — solo si
+ * `capacidadLiberada` sigue sin estar a `true`. Reclama el documento PRIMERO (patch de
+ * capacidadLiberada con ifRevisionId como cerrojo optimista, idéntico al patrón que ya usan los
+ * otros tres lotes) y solo si ese patch tiene éxito llama a compensate() — así dos invocaciones
+ * concurrentes del cron nunca liberan la misma reserva dos veces.
+ *
+ * `!= true` (no `== false`) es deliberado: en GROQ un campo sin definir es `null`, y `null != true`
+ * también es `true` — así se cogen tanto los documentos con el flag a false como los que nunca lo
+ * tuvieron.
+ *
+ * Depende de que processExpirados ponga `capacidadLiberada: true` en el MISMO commit que cambia
+ * `estado` (ver el comentario allí) — si algún día se separan, este lote puede doble-liberar.
+ */
+async function processLiberacionesPendientes(client: SanityClient): Promise<void> {
+  const docs = await client.fetch<ReservaCancelada[]>(
+    `*[_type == "reserva" &&
+       estado in ["cancelada-impago-senal", "cancelada-impago-resto", "cancelada-manual"] &&
+       capacidadLiberada != true
+      ]{ _id, _rev, pack, "quincena": quincena->{_id} }`
+  );
+
+  for (const doc of docs) {
+    const pack = packOf(doc.pack);
+    if (!pack) {
+      console.error(`cron/reservas: pack desconocido "${doc.pack}" en reserva ${doc._id} — omitida`);
+      continue;
+    }
+
+    try {
+      await client.patch(doc._id).ifRevisionId(doc._rev).set({ capacidadLiberada: true }).commit();
+    } catch (err) {
+      console.error(`cron/reservas: fallo reclamando liberación de ${doc._id}`, err);
+      continue;
+    }
+
+    await compensate(
+      client,
+      doc.quincena._id,
+      costFor(pack),
+      `cron: liberación catch-all (cancelación manual o preexistente) en ${doc._id}`
+    );
   }
 }
 
@@ -236,6 +301,7 @@ export async function GET(request: NextRequest) {
     ["senal-due", () => processSenalDue(client, today)],
     ["fabricadas", () => processFabricadas(client)],
     ["expirados", () => processExpirados(client, today)],
+    ["liberaciones-pendientes", () => processLiberacionesPendientes(client)],
   ] as const) {
     try {
       await task();

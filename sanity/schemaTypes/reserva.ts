@@ -40,7 +40,10 @@ export const reserva = defineType({
         "Automáticos (cron diario): reservada→señal-solicitada, fabricada→resto-solicitado, y " +
         "las dos cancelaciones por impago. Manuales en Studio: señal-solicitada→en-fabricacion " +
         "(al confirmar el Bizum/transferencia de la señal), en-fabricacion→fabricada (rellena " +
-        "también Resto a pagar en ese momento), resto-solicitado→pagada, pagada→enviada.",
+        "también Resto a pagar en ese momento), resto-solicitado→pagada, pagada→enviada, y " +
+        '"Cancelada — manual" desde cualquier estado (petición del cliente, error al reservar, ' +
+        "etc.) — el cron libera la capacidad de esa quincena en el siguiente tick, igual que en " +
+        "las cancelaciones por impago.",
       type: "string",
       options: {
         list: [
@@ -53,6 +56,7 @@ export const reserva = defineType({
           { title: "Enviada", value: "enviada" },
           { title: "Cancelada — señal no pagada a tiempo", value: "cancelada-impago-senal" },
           { title: "Cancelada — resto no pagado a tiempo", value: "cancelada-impago-resto" },
+          { title: "Cancelada — manual", value: "cancelada-manual" },
         ],
       },
       initialValue: "reservada",
@@ -98,6 +102,17 @@ export const reserva = defineType({
             }
             return true;
           }),
+    }),
+    defineField({
+      name: "capacidadLiberada",
+      title: "Capacidad liberada",
+      description:
+        "La marca el cron (app/api/cron/reservas/route.ts) al liberar la capacidad de la " +
+        "quincena tras CUALQUIER cancelación — por impago o manual. Editable a mano solo como " +
+        "vía de escape: si ya corregiste capacidadConsumida en la quincena tú mismo, pon esto a " +
+        "true para que el cron no la vuelva a descontar.",
+      type: "boolean",
+      initialValue: false,
     }),
     defineField({ name: "nombre", title: "Nombre", type: "string", validation: (Rule) => Rule.required() }),
     defineField({
