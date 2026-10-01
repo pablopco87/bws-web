@@ -7,9 +7,11 @@ import type { Pack } from "@/lib/data/packs";
 import type { ReservationContact } from "@/lib/email";
 
 /**
- * Ledger real de capacidad, en paralelo al mock de lib/data/slots.ts que sigue alimentando toda
- * la UI visible (panel flotante, CTA, bolitas) sin cambios — este ledger es nuevo y, por ahora,
- * nadie lo lee de vuelta en el sitio. Se usa `.inc()` (atómico server-side de verdad, inmune a
+ * Ledger real de capacidad. La UI pública (panel flotante, CTA, bolitas) lee este mismo ledger a
+ * través de lib/sanity/readCapacity.ts — solo lectura, nunca llama a nada de este archivo salvo
+ * las funciones puras explícitamente exportadas para eso (costFor, tieneHuecoPara). El único sitio
+ * que sigue en lib/data/slots.ts es el formulario de reserva (ReservaForm), fuera de alcance de esa
+ * migración. Se usa `.inc()` (atómico server-side de verdad, inmune a
  * lost-updates) tal y como se pidió explícitamente, pero eso por sí solo NO impide que dos
  * peticiones concurrentes lean la misma quincena con "hueco justo" y ambas incrementen,
  * pasándose de capacidadTotal entre las dos — por eso cada inc() se verifica en el mismo round
@@ -49,6 +51,21 @@ export function costFor(pack: Pick<Pack, "slotCost">): number {
  * `fechaFin >= $today` más permisivo de lo debido durante esa ventana. */
 export function todayInMadrid(): string {
   return new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Madrid" }).format(new Date());
+}
+
+/**
+ * Único trozo de la selección de claimQuincena que tiene sentido compartir con la lectura de
+ * disponibilidad (lib/sanity/readCapacity.ts): el resto — conteo de intentos, .inc(),
+ * compensación — no tiene equivalente puro en un "mirar sin reservar". Extraída aquí en vez de
+ * duplicada para que ambos lados no puedan desincronizarse en silencio (mismo riesgo que el filtro
+ * GROQ del cron sincronizado a mano con el schema). claimQuincena la usa tal cual, sin cambio de
+ * comportamiento.
+ */
+export function tieneHuecoPara(
+  quincena: Pick<QuincenaCandidate, "capacidadTotal" | "capacidadConsumida">,
+  cost: number
+): boolean {
+  return quincena.capacidadTotal - quincena.capacidadConsumida >= cost;
 }
 
 /** Fecha (huso de España) a `days` días desde hoy — para fijar los plazos de 5 días de señal y
@@ -113,8 +130,7 @@ async function claimQuincena(cost: number): Promise<string> {
   let attempts = 0;
 
   for (const quincena of candidates) {
-    const freeAtSnapshot = quincena.capacidadTotal - quincena.capacidadConsumida;
-    if (freeAtSnapshot < cost) continue; // no consume intento: descartada sin escribir nada
+    if (!tieneHuecoPara(quincena, cost)) continue; // no consume intento: descartada sin escribir nada
     if (attempts >= MAX_ATTEMPTS) break;
     attempts++;
 

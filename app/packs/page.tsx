@@ -8,6 +8,7 @@ import { FloatingSlotsPanel } from "@/components/site/floating-slots-panel";
 import { LiveDot } from "@/components/site/live-dot";
 import { PackCard } from "@/components/site/pack-card";
 import { packs } from "@/lib/data/packs";
+import { getUpcomingQuincenas } from "@/lib/sanity/readCapacity";
 
 export const metadata: Metadata = {
   title: "Packs · Brutal Work Studio",
@@ -23,7 +24,8 @@ const piezasPacks = packs.filter((p) => p.category === "piezas");
  * plana 10b se descartó explícitamente en chat4.md). No hay checkout real: "Ver ficha" navega a
  * /packs/[slug], nada de esto cobra ni reserva desde aquí.
  */
-export default function PacksPage() {
+export default async function PacksPage() {
+  const quincenas = await getUpcomingQuincenas();
   return (
     <>
       <Breadcrumb items={[{ label: "INICIO", href: "/" }, { label: "PACKS" }]} />
@@ -126,7 +128,7 @@ export default function PacksPage() {
         </Container>
       </div>
 
-      <FloatingSlotsPanel />
+      <FloatingSlotsPanel quincenas={quincenas} />
     </>
   );
 }

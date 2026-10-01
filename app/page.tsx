@@ -18,6 +18,7 @@ import { DraggableScrollRow } from "@/components/site/draggable-scroll-row";
 import { PhotoPlaceholder } from "@/components/site/photo-placeholder";
 import { blogEnabled } from "@/lib/site-config";
 import { packs } from "@/lib/data/packs";
+import { getUpcomingQuincenas } from "@/lib/sanity/readCapacity";
 
 const mesaPacks = packs.filter((p) => p.category === "mesa");
 const piezasPacks = packs.filter((p) => p.category === "piezas");
@@ -34,7 +35,8 @@ const piezasPacks = packs.filter((p) => p.category === "piezas");
  * ni control manual — Slider System es al revés, quieto salvo interacción). Son dos
  * comportamientos de producto distintos, cerrados así en sus propios mockups.
  */
-export default function Home() {
+export default async function Home() {
+  const quincenas = await getUpcomingQuincenas();
   return (
     <>
       {/* 01 · Hero */}
@@ -378,7 +380,7 @@ export default function Home() {
         </Container>
       )}
 
-      <FloatingSlotsPanel />
+      <FloatingSlotsPanel quincenas={quincenas} />
     </>
   );
 }

@@ -18,9 +18,19 @@ import {
 } from "@/components/ui/sheet";
 import { LiveDot } from "@/components/site/live-dot";
 import { SlotDots } from "@/components/site/slot-dots";
-import { tandas, nextTanda, getPackAvailability, formatFreeSlots } from "@/lib/data/slots";
+import {
+  formatQuincenaFree,
+  formatQuincenaRange,
+  freeUnits,
+  type QuincenaAvailability,
+  type QuincenaCapacidad,
+} from "@/lib/sanity/readCapacity";
 import { cn } from "@/lib/utils";
 import type { Pack } from "@/lib/data/packs";
+
+/** Cuántas quincenas (de las traídas por la página) se muestran como filas — igual que las 3
+ * tandas del mock anterior, para no cambiar el peso visual del panel. */
+const VISIBLE_ROWS = 3;
 
 interface FloatingSlotsPanelProps {
   /**
@@ -36,20 +46,44 @@ interface FloatingSlotsPanelProps {
    * to choose first instead.
    */
   pack?: Pack;
+  /** Siempre pasado por la página (Server Component) — este componente ya no hace fetch. */
+  quincenas: QuincenaCapacidad[];
+  /** Solo cuando packMode && pack — ya calculado una vez por la página, no se recalcula aquí. */
+  availability?: QuincenaAvailability;
   className?: string;
 }
 
-export function FloatingSlotsPanel({ packMode = false, pack, className }: FloatingSlotsPanelProps) {
+export function FloatingSlotsPanel({
+  packMode = false,
+  pack,
+  quincenas,
+  availability,
+  className,
+}: FloatingSlotsPanelProps) {
+  const currentQuincena = quincenas[0];
   return (
     <div className={className}>
-      <DesktopPanel pack={pack} />
-      {packMode ? <MobileBar pack={pack} /> : <MobilePill />}
+      <DesktopPanel pack={pack} quincenas={quincenas} availability={availability} />
+      {packMode ? (
+        <MobileBar pack={pack} availability={availability} currentQuincena={currentQuincena} />
+      ) : (
+        <MobilePill currentQuincena={currentQuincena} />
+      )}
     </div>
   );
 }
 
-function TandaRow({ tanda, dense = false }: { tanda: (typeof tandas)[number]; dense?: boolean }) {
-  const live = tanda.status === "next";
+function QuincenaRow({
+  quincena,
+  index,
+  dense = false,
+}: {
+  quincena: QuincenaCapacidad;
+  index: number;
+  dense?: boolean;
+}) {
+  const live = index === 0;
+  const units = freeUnits(quincena);
   return (
     <div
       className={cn(
@@ -59,11 +93,11 @@ function TandaRow({ tanda, dense = false }: { tanda: (typeof tandas)[number]; de
     >
       <span
         className={cn(
-          "w-[68px] shrink-0 font-mono text-xs font-medium tracking-[0.06em]",
+          "shrink-0 font-mono text-xs font-medium tracking-[0.06em]",
           live ? "text-foreground" : "text-muted"
         )}
       >
-        TANDA {String(tanda.number).padStart(2, "0")}
+        {formatQuincenaRange(quincena)}
       </span>
       <span
         className={cn(
@@ -74,9 +108,9 @@ function TandaRow({ tanda, dense = false }: { tanda: (typeof tandas)[number]; de
         {live ? "PRÓXIMA ENTREGA" : "LISTA DE ESPERA"}
       </span>
       <span className={cn("font-mono text-[11.5px]", live ? "text-muted" : "text-muted-2")}>
-        {formatFreeSlots(tanda.freeHalfSlots)}
+        {formatQuincenaFree(units)}
       </span>
-      <SlotDots tanda={tanda} />
+      <SlotDots fill={{ status: live ? "next" : "queued", totalHalfSlots: 2, freeHalfSlots: units }} />
     </div>
   );
 }
@@ -85,12 +119,12 @@ function TandaRow({ tanda, dense = false }: { tanda: (typeof tandas)[number]; de
  * Same 3-state copy as AvailabilityCTA (design/chats/chat2.md:83, "cta_states") — the floating
  * panel's CTA has to coordinate with the page's own CTA per the closed brief
  * (design/chats/chat2.md:58), not always claim "Reservar slot" regardless of this pack's actual
- * availability.
+ * availability. `availability` is always computed once by the parent page now (real Sanity data),
+ * never recomputed here.
  */
-function reserveLabel(pack: Pack): string {
-  const availability = getPackAvailability(pack);
+function reserveLabel(availability: QuincenaAvailability): string {
   if (availability.status === "libre") {
-    return `Reservar slot · Tanda ${String(availability.tanda.number).padStart(2, "0")}`;
+    return `Reservar slot · ${formatQuincenaRange(availability.quincena)}`;
   }
   if (availability.status === "espera") {
     return "Entrar en lista de espera";
@@ -98,7 +132,15 @@ function reserveLabel(pack: Pack): string {
   return "Avisarme cuando abra";
 }
 
-function ReserveButton({ pack, className }: { pack?: Pack; className?: string }) {
+function ReserveButton({
+  pack,
+  availability,
+  className,
+}: {
+  pack?: Pack;
+  availability?: QuincenaAvailability;
+  className?: string;
+}) {
   return (
     <Link
       href={pack ? `/reserva/${pack.slug}` : "/packs"}
@@ -107,13 +149,21 @@ function ReserveButton({ pack, className }: { pack?: Pack; className?: string })
         className
       )}
     >
-      {pack ? reserveLabel(pack) : "Elegir pack para reservar"}
+      {pack && availability ? reserveLabel(availability) : "Elegir pack para reservar"}
     </Link>
   );
 }
 
 /** ≥1024px: fixed panel, bottom-right, defaults open, collapsible to a small pill. */
-function DesktopPanel({ pack }: { pack?: Pack }) {
+function DesktopPanel({
+  pack,
+  quincenas,
+  availability,
+}: {
+  pack?: Pack;
+  quincenas: QuincenaCapacidad[];
+  availability?: QuincenaAvailability;
+}) {
   const [open, setOpen] = React.useState(true);
 
   return (
@@ -139,18 +189,18 @@ function DesktopPanel({ pack }: { pack?: Pack }) {
       </div>
       <CollapsibleContent>
         <div className="pt-1.5">
-          {tandas.map((tanda) => (
-            <TandaRow key={tanda.number} tanda={tanda} />
+          {quincenas.slice(0, VISIBLE_ROWS).map((quincena, i) => (
+            <QuincenaRow key={quincena._id} quincena={quincena} index={i} />
           ))}
         </div>
-        <ReserveButton pack={pack} className="h-12 w-full" />
+        <ReserveButton pack={pack} availability={availability} className="h-12 w-full" />
       </CollapsibleContent>
     </Collapsible>
   );
 }
 
 /** <1024px, everywhere except pack pages: pill that never fully closes; tap opens a sheet. */
-function MobilePill() {
+function MobilePill({ currentQuincena }: { currentQuincena: QuincenaCapacidad | undefined }) {
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -160,8 +210,9 @@ function MobilePill() {
         >
           <LiveDot />
           <span className="font-mono text-[11px] tracking-[0.1em] text-foreground">
-            TANDA {String(nextTanda.number).padStart(2, "0")} ·{" "}
-            {formatFreeSlots(nextTanda.freeHalfSlots).toUpperCase()}
+            {currentQuincena
+              ? `${formatQuincenaRange(currentQuincena)} · ${formatQuincenaFree(freeUnits(currentQuincena))}`
+              : "SIN TANDA ABIERTA"}
           </span>
           <ChevronDown className="size-3.5 rotate-180 text-muted-2" />
         </button>
@@ -177,9 +228,7 @@ function MobilePill() {
             <ChevronDown className="size-3.5" />
           </SheetClose>
         </div>
-        {tandas.map((tanda) => (
-          <TandaRow key={tanda.number} tanda={tanda} />
-        ))}
+        {currentQuincena && <QuincenaRow quincena={currentQuincena} index={0} />}
         <ReserveButton className="h-[52px] w-full" />
       </SheetContent>
     </Sheet>
@@ -192,29 +241,36 @@ function MobilePill() {
  * design/chats/chat2.md:83; this shorter phrasing for the mobile bar isn't itself closed anywhere,
  * flagging it as my own call for the space constraint).
  */
-function mobileReserveLabel(pack: Pack): string {
-  const availability = getPackAvailability(pack);
+function mobileReserveLabel(availability: QuincenaAvailability): string {
   if (availability.status === "libre") return "Reservar slot";
   if (availability.status === "espera") return "Lista de espera";
   return "Avisarme";
 }
 
 /** <1024px, pack-detail pages only: fixed bottom bar, no pill/sheet — detail's on the page. */
-function MobileBar({ pack }: { pack?: Pack }) {
-  const availability = pack ? getPackAvailability(pack) : null;
-  const tandaNumber = availability?.tanda ? availability.tanda.number : nextTanda.number;
+function MobileBar({
+  pack,
+  availability,
+  currentQuincena,
+}: {
+  pack?: Pack;
+  availability?: QuincenaAvailability;
+  currentQuincena: QuincenaCapacidad | undefined;
+}) {
+  const quincenaEnEstado = availability?.status !== "cerrado" ? availability?.quincena : undefined;
 
   return (
     <div className="fixed inset-x-0 bottom-0 z-30 flex items-center gap-3 border-t border-border-panel bg-surface-panel px-4 py-3 shadow-panel backdrop-blur-[10px] lg:hidden">
       <div className="flex-1">
         <div className="flex items-center gap-2 font-mono text-[10px] tracking-[0.12em] text-muted">
           <LiveDot />
-          {availability?.tanda
-            ? `TANDA ${String(tandaNumber).padStart(2, "0")}`
-            : "SIN TANDA ABIERTA"}
+          {quincenaEnEstado ? formatQuincenaRange(quincenaEnEstado) : "SIN TANDA ABIERTA"}
         </div>
         <div className="mt-1 font-mono text-[11.5px] text-accent">
-          {!availability && formatFreeSlots(nextTanda.freeHalfSlots).toUpperCase()}
+          {!availability &&
+            (currentQuincena
+              ? `${formatQuincenaRange(currentQuincena)} · ${formatQuincenaFree(freeUnits(currentQuincena))}`
+              : "SIN TANDA ABIERTA")}
           {availability?.status === "libre" && "SLOT DISPONIBLE"}
           {availability?.status === "espera" && "TANDA COMPLETA · EN COLA"}
           {availability?.status === "cerrado" && "SIN SLOTS ESTE MES"}
@@ -224,7 +280,7 @@ function MobileBar({ pack }: { pack?: Pack }) {
         href={pack ? `/reserva/${pack.slug}` : "/packs"}
         className="flex h-12 shrink-0 items-center justify-center bg-accent px-5 text-sm font-semibold text-on-accent transition-colors hover:bg-accent-hover"
       >
-        {pack ? mobileReserveLabel(pack) : "Elegir pack"}
+        {pack && availability ? mobileReserveLabel(availability) : "Elegir pack"}
       </Link>
     </div>
   );
