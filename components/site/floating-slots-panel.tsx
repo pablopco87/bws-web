@@ -24,7 +24,7 @@ import {
   freeUnits,
   type QuincenaAvailability,
   type QuincenaCapacidad,
-} from "@/lib/sanity/readCapacity";
+} from "@/lib/capacityDisplay";
 import { cn } from "@/lib/utils";
 import type { Pack } from "@/lib/data/packs";
 
@@ -67,7 +67,7 @@ export function FloatingSlotsPanel({
       {packMode ? (
         <MobileBar pack={pack} availability={availability} currentQuincena={currentQuincena} />
       ) : (
-        <MobilePill currentQuincena={currentQuincena} />
+        <MobilePill quincenas={quincenas} currentQuincena={currentQuincena} />
       )}
     </div>
   );
@@ -200,7 +200,13 @@ function DesktopPanel({
 }
 
 /** <1024px, everywhere except pack pages: pill that never fully closes; tap opens a sheet. */
-function MobilePill({ currentQuincena }: { currentQuincena: QuincenaCapacidad | undefined }) {
+function MobilePill({
+  quincenas,
+  currentQuincena,
+}: {
+  quincenas: QuincenaCapacidad[];
+  currentQuincena: QuincenaCapacidad | undefined;
+}) {
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -228,7 +234,9 @@ function MobilePill({ currentQuincena }: { currentQuincena: QuincenaCapacidad | 
             <ChevronDown className="size-3.5" />
           </SheetClose>
         </div>
-        {currentQuincena && <QuincenaRow quincena={currentQuincena} index={0} />}
+        {quincenas.slice(0, VISIBLE_ROWS).map((quincena, i) => (
+          <QuincenaRow key={quincena._id} quincena={quincena} index={i} />
+        ))}
         <ReserveButton className="h-[52px] w-full" />
       </SheetContent>
     </Sheet>

@@ -5,7 +5,7 @@ import {
   formatQuincenaRange,
   type QuincenaAvailability,
   type QuincenaCapacidad,
-} from "@/lib/sanity/readCapacity";
+} from "@/lib/capacityDisplay";
 import type { Pack } from "@/lib/data/packs";
 
 /**
