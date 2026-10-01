@@ -136,9 +136,9 @@ function senalImporte(pack: Pick<Pack, "slotCost">): number {
 /**
  * Email 1 del flujo de cobro manual — pide la señal. Disparado únicamente por
  * app/api/cron/reservas/route.ts (reservada → señal-solicitada), nunca de forma síncrona al
- * reservar. Copy verbatim del brief — solo se interpolan los corchetes, sin tocar el resto
- * (incluida la ausencia deliberada de línea en blanco tras el saludo, a diferencia de
- * sendReservationConfirmation).
+ * reservar. Copy verbatim del brief confirmado el 23 sep 2026 — solo se interpolan los
+ * corchetes, sin tocar el resto (incluidos los párrafos separados por línea en blanco, igual
+ * que sendReservationConfirmation).
  */
 export async function sendSenal(pack: Pack, contact: TurnoContact) {
   const importe = senalImporte(pack);
@@ -147,13 +147,21 @@ export async function sendSenal(pack: Pack, contact: TurnoContact) {
     to: contact.email,
     subject: `Tu turno de fabricación ya está aquí — ${pack.name} BWS`,
     text: [
-      `Hola ${contact.nombre}, Te toca. En cuanto confirmemos la señal, tu pack ${pack.name} entra en fabricación.`,
+      `Hola ${contact.nombre},`,
+      "",
+      `Te toca. En cuanto confirmemos la señal, tu pack ${pack.name} entra en fabricación.`,
+      "",
       `Señal a pagar ahora: ${importe}€`,
       `Bizum: al ${BIZUM_NUMERO} — indica en el concepto tu nombre y "${pack.name}"`,
       `Transferencia: ${IBAN} — mismo concepto`,
+      "",
       `Tienes 5 días desde este email para pagar la señal; pasado ese plazo, el turno pasa al siguiente en cola. Ya tenemos tu dirección de envío de cuando reservaste, no hace falta que nos escribas de nuevo.`,
+      "",
       `En cuanto confirmemos el pago, te lo decimos por aquí y arrancamos fabricación (6-7 días).`,
-      `Cualquier duda, respondes a este mismo email. — BWS`,
+      "",
+      `Cualquier duda, respondes a este mismo email.`,
+      "",
+      "— BWS",
     ].join("\n"),
   });
 }
@@ -170,12 +178,19 @@ export async function sendResto(pack: Pack, contact: TurnoContact, restoAPagar: 
     to: contact.email,
     subject: `Tu pack ya está fabricado — ${pack.name} BWS`,
     text: [
-      `Hola ${contact.nombre}, Buenas noticias: tu pack ${pack.name} ya está fabricado y listo para enviar en cuanto completemos el pago.`,
+      `Hola ${contact.nombre},`,
+      "",
+      `Buenas noticias: tu pack ${pack.name} ya está fabricado y listo para enviar en cuanto completemos el pago.`,
+      "",
       `Resto a pagar: ${restoAPagar}€ (precio total menos la señal de ${importeSenal}€ ya pagada; IVA y envío incluidos)`,
       `Bizum: al ${BIZUM_NUMERO} — mismo concepto que la señal`,
       `Transferencia: ${IBAN} — mismo concepto`,
+      "",
       `Tienes 5 días desde este email para completar el pago. En cuanto lo confirmemos, lo enviamos.`,
-      `Cualquier duda, respondes a este mismo email. — BWS`,
+      "",
+      `Cualquier duda, respondes a este mismo email.`,
+      "",
+      "— BWS",
     ].join("\n"),
   });
 }
