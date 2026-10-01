@@ -11,6 +11,7 @@ import { LiveDot } from "@/components/site/live-dot";
 import { PackCard } from "@/components/site/pack-card";
 import { PhotoPlaceholder } from "@/components/site/photo-placeholder";
 import { packs } from "@/lib/data/packs";
+import { getQuincenaAvailability, getUpcomingQuincenas } from "@/lib/sanity/readCapacity";
 
 export function generateStaticParams() {
   return packs.map((pack) => ({ slug: pack.slug }));
@@ -66,6 +67,9 @@ export default async function PackPage({ params }: { params: Promise<{ slug: str
   if (!pack) notFound();
 
   const otherPacks = packs.filter((p) => p.slug !== pack.slug);
+  const quincenas = await getUpcomingQuincenas();
+  const availability = getQuincenaAvailability(quincenas, pack);
+  const currentQuincena = quincenas[0];
 
   return (
     <>
@@ -94,7 +98,12 @@ export default async function PackPage({ params }: { params: Promise<{ slug: str
               <MetaField label="PRECIO" value="[PRECIO]" />
             </dl>
 
-            <AvailabilityCTA pack={pack} className="mt-9" />
+            <AvailabilityCTA
+              pack={pack}
+              availability={availability}
+              currentQuincena={currentQuincena}
+              className="mt-9"
+            />
           </div>
 
           <PhotoPlaceholder
@@ -252,7 +261,12 @@ export default async function PackPage({ params }: { params: Promise<{ slug: str
         </div>
       </Container>
 
-      <FloatingSlotsPanel packMode pack={pack} />
+      <FloatingSlotsPanel
+        packMode
+        pack={pack}
+        quincenas={quincenas}
+        availability={availability}
+      />
     </>
   );
 }

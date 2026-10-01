@@ -1,18 +1,29 @@
 import { cn } from "@/lib/utils";
-import type { Tanda } from "@/lib/data/slots";
 
-/** One dot = one whole slot = 2 half-slot units — see the comment on Tanda in lib/data/slots.ts. */
+/**
+ * Forma mínima que necesita SlotDots para pintar — desacoplada de dónde venga el dato (antes
+ * Tanda del mock en lib/data/slots.ts, ahora una quincena real de Sanity mapeada a esta forma por
+ * su llamador). El algoritmo de render no cambia: con totalHalfSlots=2 (una quincena = 1 unidad
+ * completa, en pasos de 0,5) ya sabe pintar 1 punto vacío/medio/lleno sin tocarlo.
+ */
+export interface SlotFill {
+  status: "next" | "queued";
+  totalHalfSlots: number;
+  freeHalfSlots: number;
+}
+
+/** One dot = one whole slot = 2 half-slot units. */
 const HALF_UNITS_PER_DOT = 2;
 
 /**
  * Three-state dot row: filled = slot fully occupied, half-filled = one half-slot booked within
- * that slot, outlined = fully available. Neutral/grey when the tanda is still queued (not the
- * next one up) — see lib/data/slots.ts.
+ * that slot, outlined = fully available. Neutral/grey when `status` is "queued" (not the next one
+ * up).
  */
-export function SlotDots({ tanda, className }: { tanda: Tanda; className?: string }) {
-  const taken = tanda.totalHalfSlots - tanda.freeHalfSlots;
-  const live = tanda.status === "next";
-  const dotCount = tanda.totalHalfSlots / HALF_UNITS_PER_DOT;
+export function SlotDots({ fill, className }: { fill: SlotFill; className?: string }) {
+  const taken = fill.totalHalfSlots - fill.freeHalfSlots;
+  const live = fill.status === "next";
+  const dotCount = fill.totalHalfSlots / HALF_UNITS_PER_DOT;
   const fillClass = live ? "bg-accent" : "bg-muted-2";
   const borderClass = live ? "border-accent" : "border-border";
 
